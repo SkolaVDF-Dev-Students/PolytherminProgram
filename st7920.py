@@ -36,18 +36,14 @@ class Screen(Canvas):
                     raise AssertionError("All SPI pins sck, mosi and miso need to be specified")
                 self.spi = SPI(-1, baudrate=baudrate, polarity=polarity, phase=phase, sck=sck, mosi=mosi, miso=miso)
             else:
-                self.spi = SPI(1, baudrate=baudrate, polarity=polarity, phase=phase)
+                self.spi = SPI(1, baudrate=1800000, polarity=0, phase=0)
 
         # allocate frame buffer just once, use memoryview-wrapped bytearrays for rows
         self.fbuff = [memoryview(bytearray(colBound)) for rowPos in range(rowBound)]
  
-        self.resetDisplayPin = resetDisplayPin
-        if self.resetDisplayPin is not None:
-            self.resetDisplayPin.init(mode=Pin.OUT)
+        self.resetDisplayPin = Pin(16, Pin.OUT)  # D0 = GPIO16 (reset)
+        self.slaveSelectPin = Pin(15, Pin.OUT)   # D8 = GPIO15 (CS)
 
-        self.slaveSelectPin = slaveSelectPin
-        if self.slaveSelectPin is not None:
-            self.slaveSelectPin.init(mode=Pin.OUT)
 
         self.set_rotation(0)  # rotate to 0 degrees
 
