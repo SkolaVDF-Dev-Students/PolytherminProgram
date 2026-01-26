@@ -1,7 +1,7 @@
 from machine import Pin, SPI
 from time import sleep
 
-from canvas import Canvas
+from tests.canvas import Canvas
 
 # dimension framebuffer
 rowBound = 64       # bytearray 'rows' - 64 rows -> 64bits
