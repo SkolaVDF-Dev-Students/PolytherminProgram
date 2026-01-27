@@ -1,7 +1,7 @@
 from tests.st7920 import Screen
 
+
 class Lcd:
-    # Font definice (class variable)
     FONT = {
         'A': [0x0E, 0x11, 0x11, 0x1F, 0x11, 0x11, 0x11],
         'B': [0x1E, 0x11, 0x11, 0x1E, 0x11, 0x11, 0x1E],
@@ -43,18 +43,18 @@ class Lcd:
         '.': [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04],
         ':': [0x00, 0x00, 0x04, 0x00, 0x04, 0x00, 0x00],
     }
-    
+
     def __init__(self):
         self.lcd = Screen()
         self.lcd.clear()
         self.plot = self.lcd.create_plotter()
-    
+
     def clear(self):
         self.lcd.clear()
-    
+
     def show(self):
         self.lcd.redraw()
-    
+
     def draw_text(self, text, x, y):
         for char in text.upper():
             if char in self.FONT:
@@ -64,17 +64,14 @@ class Lcd:
                             self.plot(x + col, y + row)
                 x += 6
         return x
-    
-    def draw_pixel(self, x, y):
-        self.plot(x, y)
-    
+
     def draw_line(self, x1, y1, x2, y2):
         dx = abs(x2 - x1)
         dy = abs(y2 - y1)
         sx = 1 if x1 < x2 else -1
         sy = 1 if y1 < y2 else -1
         err = dx - dy
-        
+
         while True:
             self.plot(x1, y1)
             if x1 == x2 and y1 == y2:
@@ -86,27 +83,50 @@ class Lcd:
             if e2 < dx:
                 err += dx
                 y1 += sy
-    
-    def draw_rect(self, x1, y1, x2, y2, fill=False):
-        if fill:
-            for x in range(x1, x2 + 1):
-                for y in range(y1, y2 + 1):
-                    self.plot(x, y)
-        else:
-            for x in range(x1, x2 + 1):
-                self.plot(x, y1)
-                self.plot(x, y2)
-            for y in range(y1, y2 + 1):
-                self.plot(x1, y)
-                self.plot(x2, y)
 
+    def draw_rect(self, x1, y1, x2, y2):
+        for x in range(x1, x2 + 1):
+            self.plot(x, y1)
+            self.plot(x, y2)
+        for y in range(y1, y2 + 1):
+            self.plot(x1, y)
+            self.plot(x2, y)
+
+    # vykreslí celé menu, selected_index = 0..3
+    def draw_menu(self, selected_index):
+        self.clear()
+
+        items = ["BACK", "MENU1", "MENU2", "HEATING"]
+        start_x = 5
+        start_y = 5
+        line_h = 12          # výška řádku
+        box_margin_x = 2
+        box_margin_y = 1
+
+        for i, text in enumerate(items):
+            y = start_y + i * line_h
+            # text
+            self.draw_text(text, start_x, y)
+            # spočítáme šířku textu pro rámeček (6 px na znak, 5 aktivních + 1 mezera)
+            text_width = len(text) * 6
+            if i == selected_index:
+                # rámeček kolem daného řádku
+                x1 = start_x - box_margin_x
+                y1 = y - box_margin_y
+                x2 = start_x + text_width + box_margin_x
+                y2 = y + 9 + box_margin_y  # 7 px font + rezerva
+                self.draw_rect(x1, y1, x2, y2)
+
+        self.show()
+
+
+# --- TEST: simulace enkodéru změnou selected_index ---
 
 display = Lcd()
 
-# X, Y (ofset)
-display.draw_text("HELLO ESP!", 5, 5)
-display.draw_text("12345", 5, 20)
-display.draw_text("TEST OK", 5, 35)
-
-display.show()
-print("DONE!")
+# tady normálně použiješ svůj enkodér,
+# já jen pro test zavolám několik stavů za sebou:
+for idx in range(4):
+    display.draw_menu(idx)
+    # tady bys měl mít třeba delay nebo čekání na další krok
+    print("Vybráno:", idx)
