@@ -42,6 +42,7 @@ class Lcd:
         '!': [0x04, 0x04, 0x04, 0x04, 0x04, 0x00, 0x04],
         '.': [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04],
         ':': [0x00, 0x00, 0x04, 0x00, 0x04, 0x00, 0x00],
+        '%': [0x18, 0x19, 0x02, 0x04, 0x08, 0x13, 0x03]
     }
 
     def __init__(self):
@@ -91,18 +92,70 @@ class Lcd:
         for y in range(y1, y2 + 1):
             self.plot(x1, y)
             self.plot(x2, y)
+    
+    def draw_heating(self):
+        self.draw_line(0, 48, 127, 48)
+        self.draw_text("HEATING", 5, 53)
+        self.draw_text("%", 120, 53)
+        self.draw_text("99", 107, 53)
 
-    def draw_menu(self):
-        self.clear()
 
-        self.draw_text("TEST", 5, 5)
-        self.draw_text("TEST", 5, 20)
-        self.draw_text("TEST", 5, 35)
-        self.draw_text("HEATING", 5, 50)
-        self.show()
+    def draw_menu_lines(self):
+        self.draw_line(0, 16, 127, 16)
+        self.draw_line(0, 32, 127, 32)
+        self.draw_line(0, 48, 127, 48)
+
+    def draw_sub_menu(self):
+        self.draw_text("BACK", 5, 5)
+        self.draw_text("HEAT UP", 5, 21)
+        self.draw_text("COOL DOWN", 5, 37)
+
+    def draw_main_menu(self, t1, t2, t3):
+        self.draw_text("T1: " + str(t1) + " C" , 5, 5)
+        self.draw_text("T2: " + str(t2) + " C", 5, 21)
+        self.draw_text("T3: " + str(t3) + " C", 5, 37)
+
+
+    def draw_heat_warning(self, x, y, t1):
+        cold_icon = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 120, 0, 8, 65, 1, 2, 84, 24, 34, 129, 2, 214, 24, 34, 129, 2, 84, 24, 33, 1, 2, 0, 24, 32, 1, 2, 0, 24, 32, 1, 2, 0, 24, 32, 1, 50, 0, 35, 16, 2, 121, 0, 79, 200, 4, 252, 128, 79, 200, 4, 252, 128, 71, 136, 2, 1, 0, 16, 32, 0, 252, 0]
+        heating_icon = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 120, 56, 8, 71, 193, 2, 254, 24, 35, 129, 2, 56, 24, 35, 129, 2, 56, 24, 35, 129, 50, 56, 27, 35, 129, 50, 0, 27, 33, 193, 50, 62, 27, 35, 225, 50, 62, 35, 19, 226, 121, 62, 79, 201, 196, 252, 156, 79, 200, 4, 252, 156, 71, 137, 194, 1, 28, 16, 32, 0, 252, 0]
+        hot_icon = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 120, 0, 8, 64, 1, 2, 0, 27, 32, 33, 50, 6, 27, 40, 193, 50, 216, 27, 39, 1, 50, 32, 27, 32, 1, 50, 0, 27, 33, 193, 50, 62, 27, 35, 225, 50, 62, 35, 19, 226, 121, 62, 79, 201, 196, 252, 156, 79, 200, 4, 252, 156, 71, 137, 194, 1, 28, 16, 32, 0, 252, 0]
+
+        if t1 < 20:
+            icon = cold_icon
+        
+        elif t1 > 20 and t1 < 300:
+            icon = heating_icon
+
+        else:
+            icon = hot_icon
+
+        for row in range(30):
+            for col in range(20):
+                pixel_index = row * 20 + col 
+                byte_index = pixel_index // 8
+                bit_position = 7 - (pixel_index % 8)
+                
+                if byte_index < len(icon):
+                    if icon[byte_index] & (1 << bit_position):
+                        self.plot(x + col, y + row)
 
 
 
 display = Lcd()
 
-display.draw_menu()
+"""display.clear()
+display.draw_heating()
+display.draw_menu_lines()
+display.main_menu()
+display.show()"""
+
+"""display.clear()
+display.draw_main_menu(1, 11, 111)
+display.draw_heating()
+display.show()"""
+display.clear
+display.draw_main_menu(10, 100, 300)
+display.draw_heat_warning(85, 7, 301)
+display.draw_heating()
+display.show()
