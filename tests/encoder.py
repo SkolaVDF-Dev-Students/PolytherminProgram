@@ -1,8 +1,9 @@
-# neotestovano nebo nevim :DD
+# otestovano s debounce 50ms
 # nevim jak funguje :DD
+# pro esp8266 zapojeni - clk pin -> D1 (GPIO5), dt pin -> D6 (GPIO12), sw pin -> D2 (GPIO4)
 
 import machine
-import time
+import utime
 
 class Encoder:
     def __init__(self, clk_pin, dt_pin, sw_pin):
@@ -21,12 +22,12 @@ class Encoder:
         self.last_clk_status = self.clk.value()
         
         # Hodnoty pro čtení
-        self.last_rotation = 0  # 1 = clockwise, -1 = anticlockwise, 0 = žádná rotace
+        self.last_rotation = 0  # 1 = anticlockwise, -1 = clockwise, 0 = žádná rotace
         self.last_button = 0    # 1 = stisknuto, -1 = uvolněno, 0 = žádná změna
         
         # Debounce tracking
         self._last_click_time = 0
-        self._debounce_ms = 200
+        self._debounce_ms = 50 # 200 ms
 
         self.clk.irq(trigger=machine.Pin.IRQ_RISING | machine.Pin.IRQ_FALLING, handler=self._encoder_handler)
         self.sw.irq(trigger=machine.Pin.IRQ_RISING | machine.Pin.IRQ_FALLING, handler=self._click_handler)
@@ -87,21 +88,23 @@ class Encoder:
             
         self._last_click_time = current_time
 
-if __name__ == "__main__":
-    # Testovací kód
+
+# Testovací kód
+
+"""
+encoder = Encoder(clk_pin=5, dt_pin=12, sw_pin=4)
+
+while True:
+    rotation = encoder.on_rotate()
+    click = encoder.on_click()
     
-    encoder = Encoder(clk_pin=13, dt_pin=12, sw_pin=14)
+    if rotation == 1:
+        print("Rotation: Anticlockwise")
+    elif rotation == -1:
+        print("Rotation: Clockwise")
 
-    while True:
-        rotation = encoder.on_rotate()
-        click = encoder.on_click()
-        
-        if rotation == 1:
-            print("Rotation: Clockwise")
-        elif rotation == -1:
-            print("Rotation: Anticlockwise")
+    if click == 1:
+        print("Click: Pressed")
 
-        if click == 1:
-            print("Click: Pressed")
-        
-        time.sleep(0.1)
+    utime.sleep_ms(1)
+"""

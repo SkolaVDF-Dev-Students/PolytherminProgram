@@ -92,41 +92,17 @@ class Lcd:
             self.plot(x1, y)
             self.plot(x2, y)
 
-    # vykreslí celé menu, selected_index = 0..3
-    def draw_menu(self, selected_index):
+    def draw_menu(self):
         self.clear()
 
-        items = ["BACK", "MENU1", "MENU2", "HEATING"]
-        start_x = 5
-        start_y = 5
-        line_h = 12          # výška řádku
-        box_margin_x = 2
-        box_margin_y = 1
-
-        for i, text in enumerate(items):
-            y = start_y + i * line_h
-            # text
-            self.draw_text(text, start_x, y)
-            # spočítáme šířku textu pro rámeček (6 px na znak, 5 aktivních + 1 mezera)
-            text_width = len(text) * 6
-            if i == selected_index:
-                # rámeček kolem daného řádku
-                x1 = start_x - box_margin_x
-                y1 = y - box_margin_y
-                x2 = start_x + text_width + box_margin_x
-                y2 = y + 9 + box_margin_y  # 7 px font + rezerva
-                self.draw_rect(x1, y1, x2, y2)
-
+        self.draw_text("TEST", 5, 5)
+        self.draw_text("TEST", 5, 20)
+        self.draw_text("TEST", 5, 35)
+        self.draw_text("HEATING", 5, 50)
         self.show()
 
 
-# --- TEST: simulace enkodéru změnou selected_index ---
 
 display = Lcd()
 
-# tady normálně použiješ svůj enkodér,
-# já jen pro test zavolám několik stavů za sebou:
-for idx in range(4):
-    display.draw_menu(idx)
-    # tady bys měl mít třeba delay nebo čekání na další krok
-    print("Vybráno:", idx)
+display.draw_menu()
