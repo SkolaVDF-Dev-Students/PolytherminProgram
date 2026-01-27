@@ -7,9 +7,12 @@
     "python.terminal.activateEnvironment": false,
     "micropico.openOnStart": true,
     "python.analysis.typeshedPaths": [
-        "~/.micropico-stubs/included"
+        "~/.micropico-stubs/included",
+        ".vscode/Pico-W-Stub"
     ],
     "python.analysis.extraPaths": [
-        "~/.micropico-stubs/included"
-    ]
+        "~/.micropico-stubs/included",
+        ".vscode/Pico-W-Stub"
+    ],
+    "python.linting.enabled": true
 }
