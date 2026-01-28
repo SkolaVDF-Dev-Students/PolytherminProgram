@@ -164,12 +164,37 @@ class Lcd:
                     if icon[byte_index] & (1 << bit_position):
                         self.plot(col, row)
 
-display = Lcd()
+    def draw_scroll(self, index):
+        if index < 0 or index > 3:
+            return
+        
+        cell_positions = [
+            (0, 16), 
+            (16, 32),
+            (32, 48), 
+            (48, 64)  
+        ]
+        
+        y_start, y_end = cell_positions[index]
+        
+        for x in range(0, 128):
+            self.plot(x, y_start)
+            self.plot(x, y_end - 1)
 
-display.clear()
+        for y in range(y_start, y_end):
+            self.plot(0, y)
+            self.plot(127, y)
+
+
+
+
+
+"""display = Lcd()"""
+
+"""display.clear()
 display.draw_heating()
 display.draw_sub_menu()
-display.show()
+display.show()"""
 
 """display.clear()
 display.draw_main_menu(1, 11, 111)
@@ -192,4 +217,17 @@ display.clear()
 display.draw_heating_menu()
 display.draw_heating()
 display.draw_menu_arrows()
+display.show()"""
+
+
+"""display.clear()
+display.draw_sub_menu()
+display.draw_scroll(2)  
+display.draw_heating()
+display.show()
+
+display.clear()
+display.draw_sub_menu()
+display.draw_scroll(1)  
+display.draw_heating()
 display.show()"""
