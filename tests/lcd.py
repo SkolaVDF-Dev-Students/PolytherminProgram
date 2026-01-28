@@ -42,7 +42,9 @@ class Lcd:
         '!': [0x04, 0x04, 0x04, 0x04, 0x04, 0x00, 0x04],
         '.': [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04],
         ':': [0x00, 0x00, 0x04, 0x00, 0x04, 0x00, 0x00],
-        '%': [0x18, 0x19, 0x02, 0x04, 0x08, 0x13, 0x03]
+        '%': [0x18, 0x19, 0x02, 0x04, 0x08, 0x13, 0x03],
+        '\x01': [0x04, 0x0C, 0x1C, 0x3C, 0x1C, 0x0C, 0x04], 
+        '\x02': [0x04, 0x06, 0x07, 0x0F, 0x07, 0x06, 0x04]
     }
 
     def __init__(self):
@@ -110,10 +112,20 @@ class Lcd:
         self.draw_text("HEAT UP", 5, 21)
         self.draw_text("COOL DOWN", 5, 37)
 
+    def draw_heating_menu(self):
+        self.draw_text("BACK", 5, 5)
+        self.draw_text("PET", 5, 21)
+        self.draw_text("PP", 5, 37)
+
     def draw_main_menu(self, t1, t2, t3):
         self.draw_text("T1: " + str(t1) + " C" , 5, 5)
         self.draw_text("T2: " + str(t2) + " C", 5, 21)
         self.draw_text("T3: " + str(t3) + " C", 5, 37)
+
+    def draw_menu_arrows(self):
+        self.draw_text("\x01", 120, 5)
+        self.draw_text("\x02", 120, 21)
+        self.draw_text("\x02", 120, 37)
 
 
     def draw_heat_warning(self, x, y, t1):
@@ -140,22 +152,44 @@ class Lcd:
                     if icon[byte_index] & (1 << bit_position):
                         self.plot(x + col, y + row)
 
-
+    def draw_boot_screen(self):
+        icon = [0]
+        for row in range(30):
+            for col in range(20):
+                pixel_index = row * 20 + col 
+                byte_index = pixel_index // 8
+                bit_position = 7 - (pixel_index % 8)
+                
+                if byte_index < len(icon):
+                    if icon[byte_index] & (1 << bit_position):
+                        self.plot(col, row)
 
 display = Lcd()
 
-"""display.clear()
+display.clear()
 display.draw_heating()
-display.draw_menu_lines()
-display.main_menu()
-display.show()"""
+display.draw_sub_menu()
+display.show()
 
 """display.clear()
 display.draw_main_menu(1, 11, 111)
 display.draw_heating()
 display.show()"""
-display.clear
+
+"""display.clear
 display.draw_main_menu(10, 100, 300)
 display.draw_heat_warning(85, 7, 301)
 display.draw_heating()
-display.show()
+display.show()"""
+
+
+"""display.clear()
+display.draw_boot_screen()
+display.show()"""
+
+"""
+display.clear()
+display.draw_heating_menu()
+display.draw_heating()
+display.draw_menu_arrows()
+display.show()"""
