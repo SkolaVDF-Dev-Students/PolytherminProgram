@@ -1,7 +1,7 @@
 from tests.st7920 import Screen
 
+
 class Lcd:
-    # Font definice (class variable)
     FONT = {
         'A': [0x0E, 0x11, 0x11, 0x1F, 0x11, 0x11, 0x11],
         'B': [0x1E, 0x11, 0x11, 0x1E, 0x11, 0x11, 0x1E],
@@ -42,19 +42,22 @@ class Lcd:
         '!': [0x04, 0x04, 0x04, 0x04, 0x04, 0x00, 0x04],
         '.': [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04],
         ':': [0x00, 0x00, 0x04, 0x00, 0x04, 0x00, 0x00],
+        '%': [0x18, 0x19, 0x02, 0x04, 0x08, 0x13, 0x03],
+        '\x01': [0x00, 0x04, 0x06, 0x1F, 0x06, 0x04, 0x00],
+        '\x02': [0x04, 0x0E, 0x1F, 0x04, 0x1C, 0x00, 0x00]
     }
-    
+
     def __init__(self):
         self.lcd = Screen()
         self.lcd.clear()
         self.plot = self.lcd.create_plotter()
-    
+
     def clear(self):
         self.lcd.clear()
-    
+
     def show(self):
         self.lcd.redraw()
-    
+
     def draw_text(self, text, x, y):
         for char in text.upper():
             if char in self.FONT:
@@ -64,17 +67,14 @@ class Lcd:
                             self.plot(x + col, y + row)
                 x += 6
         return x
-    
-    def draw_pixel(self, x, y):
-        self.plot(x, y)
-    
+
     def draw_line(self, x1, y1, x2, y2):
         dx = abs(x2 - x1)
         dy = abs(y2 - y1)
         sx = 1 if x1 < x2 else -1
         sy = 1 if y1 < y2 else -1
         err = dx - dy
-        
+
         while True:
             self.plot(x1, y1)
             if x1 == x2 and y1 == y2:
@@ -86,27 +86,148 @@ class Lcd:
             if e2 < dx:
                 err += dx
                 y1 += sy
+
+    def draw_rect(self, x1, y1, x2, y2):
+        for x in range(x1, x2 + 1):
+            self.plot(x, y1)
+            self.plot(x, y2)
+        for y in range(y1, y2 + 1):
+            self.plot(x1, y)
+            self.plot(x2, y)
     
-    def draw_rect(self, x1, y1, x2, y2, fill=False):
-        if fill:
-            for x in range(x1, x2 + 1):
-                for y in range(y1, y2 + 1):
-                    self.plot(x, y)
+    def draw_heating(self):
+        self.draw_line(0, 48, 127, 48)
+        self.draw_text("HEATING", 5, 53)
+        self.draw_text("%", 120, 53)
+        self.draw_text("99", 107, 53)
+
+
+    def draw_menu_lines(self):
+        self.draw_line(0, 16, 127, 16)
+        self.draw_line(0, 32, 127, 32)
+        self.draw_line(0, 48, 127, 48)
+
+    def draw_sub_menu(self):
+        self.draw_text("BACK", 5, 5)
+        self.draw_text("HEAT UP", 5, 21)
+        self.draw_text("COOL DOWN", 5, 37)
+
+    def draw_heating_menu(self):
+        self.draw_text("BACK", 5, 5)
+        self.draw_text("PET", 5, 21)
+        self.draw_text("PP", 5, 37)
+
+    def draw_main_menu(self, t1, t2, t3):
+        self.draw_text("T1: " + str(t1) + " C" , 5, 5)
+        self.draw_text("T2: " + str(t2) + " C", 5, 21)
+        self.draw_text("T3: " + str(t3) + " C", 5, 37)
+
+    def draw_menu_arrows(self):
+        self.draw_text("\x02", 120, 5)
+        self.draw_text("\x01", 120, 21)
+        self.draw_text("\x01", 120, 37)
+
+
+    def draw_heat_warning(self, x, y, t1):
+        cold_icon = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 120, 0, 8, 65, 1, 2, 84, 24, 34, 129, 2, 214, 24, 34, 129, 2, 84, 24, 33, 1, 2, 0, 24, 32, 1, 2, 0, 24, 32, 1, 2, 0, 24, 32, 1, 50, 0, 35, 16, 2, 121, 0, 79, 200, 4, 252, 128, 79, 200, 4, 252, 128, 71, 136, 2, 1, 0, 16, 32, 0, 252, 0]
+        heating_icon = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 120, 56, 8, 71, 193, 2, 254, 24, 35, 129, 2, 56, 24, 35, 129, 2, 56, 24, 35, 129, 50, 56, 27, 35, 129, 50, 0, 27, 33, 193, 50, 62, 27, 35, 225, 50, 62, 35, 19, 226, 121, 62, 79, 201, 196, 252, 156, 79, 200, 4, 252, 156, 71, 137, 194, 1, 28, 16, 32, 0, 252, 0]
+        hot_icon = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 120, 0, 8, 64, 1, 2, 0, 27, 32, 33, 50, 6, 27, 40, 193, 50, 216, 27, 39, 1, 50, 32, 27, 32, 1, 50, 0, 27, 33, 193, 50, 62, 27, 35, 225, 50, 62, 35, 19, 226, 121, 62, 79, 201, 196, 252, 156, 79, 200, 4, 252, 156, 71, 137, 194, 1, 28, 16, 32, 0, 252, 0]
+
+        if t1 < 20:
+            icon = cold_icon
+        
+        elif t1 > 20 and t1 < 300:
+            icon = heating_icon
+
         else:
-            for x in range(x1, x2 + 1):
-                self.plot(x, y1)
-                self.plot(x, y2)
-            for y in range(y1, y2 + 1):
-                self.plot(x1, y)
-                self.plot(x2, y)
+            icon = hot_icon
+
+        for row in range(30):
+            for col in range(20):
+                pixel_index = row * 20 + col 
+                byte_index = pixel_index // 8
+                bit_position = 7 - (pixel_index % 8)
+                
+                if byte_index < len(icon):
+                    if icon[byte_index] & (1 << bit_position):
+                        self.plot(x + col, y + row)
+
+    def draw_boot_screen(self):
+        icon = [0]
+        for row in range(30):
+            for col in range(20):
+                pixel_index = row * 20 + col 
+                byte_index = pixel_index // 8
+                bit_position = 7 - (pixel_index % 8)
+                
+                if byte_index < len(icon):
+                    if icon[byte_index] & (1 << bit_position):
+                        self.plot(col, row)
+
+    def draw_scroll(self, index):
+        if index < 0 or index > 3:
+            return
+        
+        cell_positions = [
+            (0, 16), 
+            (16, 32),
+            (32, 48), 
+            (48, 64)  
+        ]
+        
+        y_start, y_end = cell_positions[index]
+        
+        for x in range(0, 128):
+            self.plot(x, y_start)
+            self.plot(x, y_end - 1)
+
+        for y in range(y_start, y_end):
+            self.plot(0, y)
+            self.plot(127, y)
 
 
-display = Lcd()
 
-# X, Y (ofset)
-display.draw_text("HELLO ESP!", 5, 5)
-display.draw_text("12345", 5, 20)
-display.draw_text("TEST OK", 5, 35)
 
+
+"""display = Lcd()"""
+
+"""display.clear()
+display.draw_heating()
+display.draw_sub_menu()
+display.show()"""
+
+"""display.clear()
+display.draw_main_menu(1, 11, 111)
+display.draw_heating()
+display.show()"""
+
+"""display.clear
+display.draw_main_menu(10, 100, 300)
+display.draw_heat_warning(85, 7, 301)
+display.draw_heating()
+display.show()"""
+
+
+"""display.clear()
+display.draw_boot_screen()
+display.show()"""
+
+"""
+display.clear()
+display.draw_heating_menu()
+display.draw_heating()
+display.draw_menu_arrows()
+display.show()"""
+
+
+"""display.clear()
+display.draw_sub_menu()
+display.draw_scroll(2)  
+display.draw_heating()
 display.show()
-print("DONE!")
+
+display.clear()
+display.draw_sub_menu()
+display.draw_scroll(1)  
+display.draw_heating()
+display.show()"""
