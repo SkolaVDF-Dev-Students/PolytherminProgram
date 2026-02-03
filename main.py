@@ -20,32 +20,78 @@ display = Lcd()
 index = 0
 
 
+
+# tezsi na pochopeni, vytvorime stromovou strukturu, chatgpt kdyztak vysvetli
+class Menu:
+    def __init__(self, name, parent=None):
+        self.name = name
+        self.parent = parent
+        self.children = []
+
+    def add_child(self, child):
+        child.parent = self
+        self.children.append(child)
+
+# vytvorime main menu
+main = Menu("Main")
+
+# vytvorime sub menu
+sub = Menu("Sub")
+
+# vytvorime heat menu
+heat = Menu("Heat")
+
+# sub menu je child main menu
+main.add_child(sub)
+# heat menu je child sub menu
+sub.add_child(heat)
+
+# main>sub>heat ez jak facka to vis
+
+# nastavime current menu na main
+current = main  
+
+# vstoupime do sub menu
+current = current.children[0]
+
+# vstoupime do heat menu
+current = current.children[0]
+
+# vratime se zpet jasny jak facka
+current = current.parent
+
+# ted jsme vyresili to, ze nemusime ukladat historii a proste objekt vi co je nad nim a pod nim.
+
+
 # trosku down loop drz hubu 
 while True:
+    # nastavime click enkoderu na false
+    click = False
+
     # nastavime c promena ktera me napadla pravepodobne change - abychom nevykreslovali v kazdem loopu screen, vykreslime ho pouze kdyz je zmena
-    c = False
-    # getneme rotace a click
-    rotation = encoder.on_rotate()
-    click = encoder.on_click()
+    change = False
     
-    # vyhodnotime enkoder. trosku down
-    if rotation == 1:
+    # getneme rotace a click
+    encoder_rotation = encoder.on_rotate()
+    encoder_click = encoder.on_click()
+    
+    # vyhodnotime enkoder. 
+    if encoder_rotation == 1:
         index = max(0, index - 1)
-        print("anticlock")
-        c = True
+        change = True
 
-    elif rotation == -1:
+    elif encoder_rotation == -1:
         index = min(2, index + 1)
-        print("clock")
-        c = True
+        change = True
 
 
-    if click == 1:
-        print("Click: Pressed")
-        c = True
+    if encoder_click == 1:
+        # print("Click: Pressed")
+        click = True
+        change = True
 
     # pokud se neco zmenilo provedeme zmeny
-    if c: 
+    if change: 
         # clearneme display. nutne pokazde, postupne vykreslujeme veci - vrstvime je na sebe jako hamburger
         display.clear()
         # vykreslime sub menicko
