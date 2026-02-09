@@ -1,106 +1,121 @@
-# zde bude hlavni loop :()
-# pridano komenty pro nejake saski co to budou cist. doufam ze chapete jinak mi poslete klicenku. pokud tento komentar nevidis nejsi v feature/ui branchy - chyba switchni do feature/ui.
-# jeste jednou piste vse do tohoto branche ja az prijdu v pondeli checknu to a mergnu to do main. dekujeme budoucimu misovi.
 import machine
 import utime
 from tests.lcd import Lcd
 from tests.encoder import Encoder
 
-# aka new zapojeni sasci.
-# CLK -> D1 (GPIO5)
-# DT  -> D2 (GPIO4)
-# SW  -> D3 (GPIO0)
-encoder = Encoder(clk_pin=5, dt_pin=4, sw_pin=0)
 
-# setupneme lcd. piny jsou napsane v nejakem md najdi si to 
-display = Lcd()
+def handle_heat_action(index):
+    """Akce pro menu vytápění"""
+    if index == 1:
+        print("PET")
 
-# nastavime index scrollu na 0
-# scroll index 0 - 2
-index = 0
+    elif index == 2:
+        print("PP")
 
+def handle_cool_action(index):
+    if index == 1:
+        print("COOL ACTION")
 
-
-# tezsi na pochopeni, vytvorime stromovou strukturu, chatgpt kdyztak vysvetli
 class Menu:
-    def __init__(self, name, parent=None):
+    def __init__(self, name, menu_lines, parent=None, scrollable=True, action=None):
         self.name = name
         self.parent = parent
-        self.children = []
+        self.menu = menu_lines
+        self.children = {} 
+        self.is_scrollable = scrollable
+        self.action = action
 
-    def add_child(self, child):
-        child.parent = self
-        self.children.append(child)
+    def add_child(self, index, child_menu):
+        child_menu.parent = self
+        self.children[index] = child_menu
 
-# vytvorime main menu
-main = Menu("Main")
+    def execute_action(self, index):
+        if self.action:
+            self.action(index)
 
-# vytvorime sub menu
-sub = Menu("Sub")
+t1 = 300
+t2 = 200 
+t3 = 100
 
-# vytvorime heat menu
-heat = Menu("Heat")
+main = Menu("Main", [f"T1: {t1} C", f"T2: {t2} C", f"T3: {t3} C"], scrollable=False)
 
-# sub menu je child main menu
-main.add_child(sub)
-# heat menu je child sub menu
-sub.add_child(heat)
+# Podmenu
+sub = Menu("Sub", ["BACK", "HEAT UP", "COOL DOWN"])
+heat = Menu("Heat", ["BACK", "PET", "PP"], action=handle_heat_action)
+cool = Menu("Cool", ["BACK", "START COOLING"], action=handle_cool_action)
 
-# main>sub>heat ez jak facka to vis
+main.add_child(0, sub) 
+main.add_child(1, sub)
+main.add_child(2, sub)
 
-# nastavime current menu na main
-current = main  
-
-# vstoupime do sub menu
-current = current.children[0]
-
-# vstoupime do heat menu
-current = current.children[0]
-
-# vratime se zpet jasny jak facka
-current = current.parent
-
-# ted jsme vyresili to, ze nemusime ukladat historii a proste objekt vi co je nad nim a pod nim.
+sub.add_child(1, heat)
+sub.add_child(2, cool) 
 
 
-# trosku down loop drz hubu 
+encoder = Encoder(clk_pin=5, dt_pin=4, sw_pin=0)
+display = Lcd()
+
+current = main
+index = 0
+change = True
+
+
 while True:
-    # nastavime click enkoderu na false
-    click = False
-
-    # nastavime c promena ktera me napadla pravepodobne change - abychom nevykreslovali v kazdem loopu screen, vykreslime ho pouze kdyz je zmena
-    change = False
-    
-    # getneme rotace a click
     encoder_rotation = encoder.on_rotate()
     encoder_click = encoder.on_click()
     
-    # vyhodnotime enkoder. 
-    if encoder_rotation == 1:
-        index = max(0, index - 1)
-        change = True
-
-    elif encoder_rotation == -1:
-        index = min(2, index + 1)
-        change = True
-
+    if current.is_scrollable:
+        if encoder_rotation == 1:
+            index = max(0, index - 1)
+            change = True
+        elif encoder_rotation == -1:
+            index = min(len(current.menu) - 1, index + 1)
+            change = True
+    else:
+        index = -1 
 
     if encoder_click == 1:
-        # print("Click: Pressed")
-        click = True
+        if not current.is_scrollable:
+            current = sub
+            index = 0
+        else:
+            selected_text = current.menu[index]
+            
+            if selected_text == "BACK":
+                if current.parent:
+                    current = current.parent
+                    index = 0
+            elif index in current.children:
+                current = current.children[index]
+                index = 0
+            else:
+                display.clear()
+                display.draw_text("PROVADIM...", 30, 25)
+                display.show()
+                
+                current.execute_action(index)
+                
+                utime.sleep_ms(800) 
+        
         change = True
 
-    # pokud se neco zmenilo provedeme zmeny
     if change: 
-        # clearneme display. nutne pokazde, postupne vykreslujeme veci - vrstvime je na sebe jako hamburger
         display.clear()
-        # vykreslime sub menicko
-        display.draw_sub_menu()
-        # vykreslime arrows do menicka
-        display.draw_menu_arrows()
-        # vykreslime momentalni index co si nastavime v enkoderu
-        display.draw_scroll(index)  
-        # vykreslime heating bar
+        
+        m1 = current.menu[0] if len(current.menu) > 0 else ""
+        m2 = current.menu[1] if len(current.menu) > 1 else ""
+        m3 = current.menu[2] if len(current.menu) > 2 else ""
+        display.draw_menu(m1, m2, m3)
+        
+        if current.is_scrollable and index >= 0:
+            display.draw_scroll(index)
+            display.draw_menu_arrows()
+        
         display.draw_heating()
-        # vse posleme do displaye a on si to vykresli
+        if not current.is_scrollable:
+            display.draw_heat_warning(90, 10, t1) 
+        
         display.show()
+        change = False
+    
+    utime.sleep_ms(10)

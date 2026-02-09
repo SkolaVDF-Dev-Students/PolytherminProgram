@@ -114,23 +114,11 @@ class Lcd:
         self.draw_line(0, 32, 127, 32)
         self.draw_line(0, 48, 127, 48)
 
-    def draw_sub_menu(self):
-        """Vykresli sub menu."""
-        self.draw_text("BACK", 5, 5)
-        self.draw_text("HEAT UP", 5, 21)
-        self.draw_text("COOL DOWN", 5, 37)
+    def draw_menu(self, m1, m2, m3):
+        self.draw_text(m1, 5, 5)
+        self.draw_text(m2, 5, 21)
+        self.draw_text(m3, 5, 37)
 
-    def draw_heating_menu(self):
-        """Vykresli heating menu"""
-        self.draw_text("BACK", 5, 5)
-        self.draw_text("PET", 5, 21)
-        self.draw_text("PP", 5, 37)
-
-    def draw_main_menu(self, t1, t2, t3):
-        """Vykresli main menu"""
-        self.draw_text("T1: " + str(t1) + " C" , 5, 5)
-        self.draw_text("T2: " + str(t2) + " C", 5, 21)
-        self.draw_text("T3: " + str(t3) + " C", 5, 37)
 
     def draw_menu_arrows(self):
         """Vykresli menu arrows"""
@@ -164,19 +152,6 @@ class Lcd:
                     if icon[byte_index] & (1 << bit_position):
                         self.plot(x + col, y + row)
 
-    def draw_boot_screen(self):
-        """Melo by vykreslit boot screen. Max 32x32 2 ikony."""
-        icon = [0]
-        for row in range(30):
-            for col in range(20):
-                pixel_index = row * 20 + col 
-                byte_index = pixel_index // 8
-                bit_position = 7 - (pixel_index % 8)
-                
-                if byte_index < len(icon):
-                    if icon[byte_index] & (1 << bit_position):
-                        self.plot(col, row)
-
     def draw_scroll(self, index):
         """Vykresli scroll bar. Nutne zavolat v kazdem loopu. Index se vola z enkoderu."""
         if index < 0 or index > 3:
@@ -198,7 +173,6 @@ class Lcd:
         for y in range(y_start, y_end):
             self.plot(0, y)
             self.plot(127, y)
-
 
 
 
