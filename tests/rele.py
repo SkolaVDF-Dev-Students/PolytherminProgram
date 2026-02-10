@@ -15,8 +15,3 @@ class Rele:
 
     def relay_off(self):
         self.pin.value(0)  
-
-
-r = Rele(5)
-
-

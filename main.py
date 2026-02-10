@@ -3,22 +3,73 @@ import utime
 from tests.lcd import Lcd
 from tests.encoder import Encoder
 
+t1 = 300
+t2 = 200 
+t3 = 100
+
+goal_temp = 0
+
+index = 0
+change = True
+
+
+encoder = Encoder(clk_pin=5, dt_pin=4, sw_pin=0)
+display = Lcd()
+
 
 def handle_preset_heat_action(index):
+    global goal_temp
     """Akce pro menu vytápění"""
     if index == 1:
-        print("PET")
+        goal_temp = 300
 
     elif index == 2:
-        print("PP")
+        goal_temp = 250
 
 def handle_manual_heat_action(index):
     """Akce pro menu vytápění"""
+    global goal_temp
     if index == 1:
-        print("10")
+        while True:
+            encoder_rotation = encoder.on_rotate()
+            encoder_click = encoder.on_click()
+
+            if encoder_rotation == 1:
+                goal_temp += 10
+
+            elif encoder_rotation == -1:
+                goal_temp -= 10
+
+            if encoder_click == 1:
+                break
+                print("POKUD TOHLE VIDIS JE TO SPATNE A NEKDO SE NEDOZIJE ZITRKA")
+            
+            display.clear()
+            display.draw_heat_settings(goal_temp)
+            display.show()   
+
+            utime.sleep_ms(10)  
 
     elif index == 2:
-        print("1")
+        while True:
+            encoder_rotation = encoder.on_rotate()
+            encoder_click = encoder.on_click()
+            if encoder_rotation == 1:
+                goal_temp += 1
+
+            elif encoder_rotation == -1:
+                goal_temp -= 1
+            
+            if encoder_click == 1:
+                break
+
+            display.clear()
+            display.draw_heat_settings(goal_temp)
+            display.show() 
+
+            utime.sleep_ms(10)   
+
+            
 
 def handle_cool_action(index):
     if index == 1:
@@ -41,9 +92,6 @@ class Menu:
         if self.action:
             self.action(index)
 
-t1 = 300
-t2 = 200 
-t3 = 100
 
 main = Menu("Main", [f"T1: {t1} C", f"T2: {t2} C", f"T3: {t3} C"], scrollable=False)
 
@@ -65,12 +113,7 @@ heat.add_child(1, preset)
 heat.add_child(2, manual)
 
 
-encoder = Encoder(clk_pin=5, dt_pin=4, sw_pin=0)
-display = Lcd()
-
 current = main
-index = 0
-change = True
 
 
 while True:
@@ -102,14 +145,9 @@ while True:
                 current = current.children[index]
                 index = 0
             else:
-                display.clear()
-                display.draw_text("PROVADIM...", 30, 25)
-                display.show()
-                
+                change = True
                 current.execute_action(index)
-                
-                utime.sleep_ms(800) 
-        
+
         change = True
 
     if change: 

@@ -175,7 +175,9 @@ class Lcd:
             self.plot(0, y)
             self.plot(127, y)
 
-
+    def draw_heat_settings(self, goal_temp):
+        """Vykresleni heating nastaveni"""
+        self.draw_text(f"GOAL TEMP: {goal_temp}", 30, 25)
 
 
 """display = Lcd()"""
