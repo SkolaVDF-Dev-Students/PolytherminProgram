@@ -124,7 +124,7 @@ class Lcd:
         """Vykresli menu arrows"""
         self.draw_text("\x02", 120, 5)
         self.draw_text("\x01", 120, 21)
-        if seconds:
+        if second:
             self.draw_text("\x01", 120, 37)
 
 
