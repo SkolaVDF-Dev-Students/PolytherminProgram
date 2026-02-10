@@ -4,13 +4,21 @@ from tests.lcd import Lcd
 from tests.encoder import Encoder
 
 
-def handle_heat_action(index):
+def handle_preset_heat_action(index):
     """Akce pro menu vytápění"""
     if index == 1:
         print("PET")
 
     elif index == 2:
         print("PP")
+
+def handle_manual_heat_action(index):
+    """Akce pro menu vytápění"""
+    if index == 1:
+        print("10")
+
+    elif index == 2:
+        print("1")
 
 def handle_cool_action(index):
     if index == 1:
@@ -41,15 +49,20 @@ main = Menu("Main", [f"T1: {t1} C", f"T2: {t2} C", f"T3: {t3} C"], scrollable=Fa
 
 # Podmenu
 sub = Menu("Sub", ["BACK", "HEAT UP", "COOL DOWN"])
-heat = Menu("Heat", ["BACK", "PET", "PP"], action=handle_heat_action)
-cool = Menu("Cool", ["BACK", "START COOLING"], action=handle_cool_action)
+heat = Menu("Heat", ["BACK", "PRESET", "MANUAL"])
+preset = Menu("Heat", ["BACK", "PET", "PP"], action=handle_preset_heat_action)
+manual = Menu("Heat", ["BACK", "ARANGE 10 C", "ARANGE 1 C"], action=handle_manual_heat_action)
+cool = Menu("Cool", ["BACK", "START COOLING", ""], action=handle_cool_action)
 
 main.add_child(0, sub) 
 main.add_child(1, sub)
 main.add_child(2, sub)
 
 sub.add_child(1, heat)
-sub.add_child(2, cool) 
+sub.add_child(2, cool)
+
+heat.add_child(1, preset)
+heat.add_child(2, manual)
 
 
 encoder = Encoder(clk_pin=5, dt_pin=4, sw_pin=0)
@@ -109,7 +122,7 @@ while True:
         
         if current.is_scrollable and index >= 0:
             display.draw_scroll(index)
-            display.draw_menu_arrows()
+            display.draw_menu_arrows(True)
         
         display.draw_heating()
         if not current.is_scrollable:
