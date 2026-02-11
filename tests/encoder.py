@@ -88,23 +88,3 @@ class Encoder:
             
         self._last_click_time = current_time
 
-
-# Testovací kód
-
-"""
-encoder = Encoder(clk_pin=5, dt_pin=12, sw_pin=4)
-
-while True:
-    rotation = encoder.on_rotate()
-    click = encoder.on_click()
-    
-    if rotation == 1:
-        print("Rotation: Anticlockwise")
-    elif rotation == -1:
-        print("Rotation: Clockwise")
-
-    if click == 1:
-        print("Click: Pressed")
-
-    utime.sleep_ms(1)
-"""

@@ -2,8 +2,9 @@ import machine
 import utime
 from tests.lcd import Lcd
 from tests.encoder import Encoder
+from tests.rele import Rele
 
-t1 = 300
+t1 = 10
 t2 = 200 
 t3 = 100
 
@@ -11,24 +12,28 @@ goal_temp = 0
 
 index = 0
 change = True
-
+heating = False
 
 encoder = Encoder(clk_pin=5, dt_pin=4, sw_pin=0)
 display = Lcd()
+rele = Rele(2)
+rele.relay_off()
 
 
 def handle_preset_heat_action(index):
-    global goal_temp
+    global goal_temp, heating 
     """Akce pro menu vytápění"""
     if index == 1:
         goal_temp = 300
+        heating = True
 
     elif index == 2:
         goal_temp = 250
+        heating = True
 
 def handle_manual_heat_action(index):
     """Akce pro menu vytápění"""
-    global goal_temp
+    global goal_temp, heating
     if index == 1:
         while True:
             encoder_rotation = encoder.on_rotate()
@@ -42,8 +47,8 @@ def handle_manual_heat_action(index):
                     goal_temp -= 10
 
             if encoder_click == 1:
+                heating = True
                 break
-                print("POKUD TOHLE VIDIS JE TO SPATNE A NEKDO SE NEDOZIJE ZITRKA")
             
             display.clear()
             display.draw_heat_settings(goal_temp)
@@ -63,6 +68,7 @@ def handle_manual_heat_action(index):
                     goal_temp -= 1
             
             if encoder_click == 1:
+                heating = True
                 break
 
             display.clear()
@@ -74,8 +80,12 @@ def handle_manual_heat_action(index):
             
 
 def handle_cool_action(index):
+    """Start cooling"""
+    global heating
     if index == 1:
-        print("COOL ACTION")
+        heating = False
+        rele.relay_off()
+        print("TURNING RELAY OFF")
 
 class Menu:
     def __init__(self, name, menu_lines, parent=None, scrollable=True, action=None):
@@ -170,5 +180,16 @@ while True:
         
         display.show()
         change = False
+
+
+    if heating:
+        # 300 > 300
+        if goal_temp >= t1:
+            rele.relay_on()
+            print("RELAY IS ON")
+
+        else:
+            print("TURNING RELAY OFF")
+            rele.relay_off()
     
     utime.sleep_ms(10)

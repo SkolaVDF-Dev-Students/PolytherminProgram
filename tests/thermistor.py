@@ -39,11 +39,3 @@ class Thermistor:
 
         temp_kelvin = 1 / ((1 / self.t0) + (1 / self.beta) * math.log(R_ntc / self.r0))
         return temp_kelvin - 273.15
-
-
-
-t0 = Thermistor(0, 100000, 100000, 3950, 298.15)
-
-while True:
-    print(t0.readValue())
-    time.sleep(0.5)
