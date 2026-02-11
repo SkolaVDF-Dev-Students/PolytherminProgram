@@ -59,19 +59,13 @@ class Encoder:
         Interní handler pro detekci směru otáčení.
         Volá se automaticky při změně na CLK pinu.
         """
-    # Přečteme oba piny najednou co nejrychleji
         current_clk = self.clk.value()
-        current_dt = self.dt.value()
         
-        # Logika: pokud se CLK změnilo z 0 na 1 (RISING edge)
-        if current_clk != self.last_clk_status:
-            if current_clk == 1:
-                # Klíčový moment: směr určíme podle toho, zda se DT rovná CLK
-                if current_dt != current_clk:
-                    self.last_rotation = -1  # Clockwise
-                else:
-                    self.last_rotation = 1   # Anticlockwise
-            self.last_clk_status = current_clk
+        if current_clk != self.last_clk_status and current_clk == 1:
+            direction = -1 if self.dt.value() != current_clk else 1
+            self.last_rotation = direction  # Uložit hodnotu
+                
+        self.last_clk_status = current_clk
 
     def _click_handler(self, pin):
         """

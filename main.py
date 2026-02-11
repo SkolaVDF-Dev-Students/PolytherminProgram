@@ -34,11 +34,11 @@ def handle_manual_heat_action(index):
             encoder_rotation = encoder.on_rotate()
             encoder_click = encoder.on_click()
 
-            if encoder_rotation == 1:
+            if encoder_rotation == -1:
                 goal_temp += 10
 
-            elif encoder_rotation == -1:
-                if goal_temp >= 0:
+            elif encoder_rotation == 1:
+                if goal_temp > 0:
                     goal_temp -= 10
 
             if encoder_click == 1:
@@ -55,11 +55,11 @@ def handle_manual_heat_action(index):
         while True:
             encoder_rotation = encoder.on_rotate()
             encoder_click = encoder.on_click()
-            if encoder_rotation == 1:
+            if encoder_rotation == -1:
                 goal_temp += 1
 
-            elif encoder_rotation == -1:
-                if goal_temp >= 0:
+            elif encoder_rotation == 1:
+                if goal_temp > 0:
                     goal_temp -= 1
             
             if encoder_click == 1:
