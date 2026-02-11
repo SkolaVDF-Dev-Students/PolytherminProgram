@@ -38,7 +38,8 @@ def handle_manual_heat_action(index):
                 goal_temp += 10
 
             elif encoder_rotation == -1:
-                goal_temp -= 10
+                if goal_temp >= 0:
+                    goal_temp -= 10
 
             if encoder_click == 1:
                 break
@@ -58,7 +59,8 @@ def handle_manual_heat_action(index):
                 goal_temp += 1
 
             elif encoder_rotation == -1:
-                goal_temp -= 1
+                if goal_temp >= 0:
+                    goal_temp -= 1
             
             if encoder_click == 1:
                 break
