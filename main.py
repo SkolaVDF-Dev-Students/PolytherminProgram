@@ -3,10 +3,11 @@ import utime
 from tests.lcd import Lcd
 from tests.encoder import Encoder
 from tests.rele import Rele
+from tests.thermistor import Thermistor
 
-t1 = 10
-t2 = 200 
-t3 = 100
+t1 = 0
+t2 = 0
+t3 = 0
 
 goal_temp = 0
 
@@ -18,7 +19,7 @@ encoder = Encoder(clk_pin=5, dt_pin=4, sw_pin=0)
 display = Lcd()
 rele = Rele(2)
 rele.relay_off()
-
+thermistor = Thermistor(0, 100000, 100000, 3950, 298.15)
 
 def handle_preset_heat_action(index):
     global goal_temp, heating 
@@ -104,8 +105,11 @@ class Menu:
         if self.action:
             self.action(index)
 
+    def change_temp(self, t1, t2, t3):
+        self.menu = [f"T1: {int(t1)} C", f"T2: {int(t2)} C", f"T3: {int(t3)} C"]
 
-main = Menu("Main", [f"T1: {t1} C", f"T2: {t2} C", f"T3: {t3} C"], scrollable=False)
+
+main = Menu("Main", [f"T1: {int(t1)} C", f"T2: {int(t2)} C", f"T3: {int(t3)} C"], scrollable=False)
 
 # Podmenu
 sub = Menu("Sub", ["BACK", "HEAT UP", "COOL DOWN"])
@@ -131,6 +135,7 @@ current = main
 while True:
     encoder_rotation = encoder.on_rotate()
     encoder_click = encoder.on_click()
+    t1 = thermistor.readValue()
     
     if current.is_scrollable:
         if encoder_rotation == 1:
@@ -164,6 +169,8 @@ while True:
 
     if change: 
         display.clear()
+
+        main.change_temp(t1, 0, 0)
         
         m1 = current.menu[0] if len(current.menu) > 0 else ""
         m2 = current.menu[1] if len(current.menu) > 1 else ""
@@ -184,12 +191,12 @@ while True:
 
     if heating:
         # 300 > 300
-        if goal_temp >= t1:
+        if goal_temp > t1:
             rele.relay_on()
-            print("RELAY IS ON")
 
         else:
-            print("TURNING RELAY OFF")
             rele.relay_off()
     
+
+
     utime.sleep_ms(10)

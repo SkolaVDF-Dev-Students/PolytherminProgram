@@ -33,9 +33,10 @@ class Thermistor:
         adc_value = self.pin.read()
 
         if adc_value <= 0 or adc_value >= 1023:
-            return None
+            return 0
         
         R_ntc = self.r_fixed * (1023 - adc_value) / adc_value
 
         temp_kelvin = 1 / ((1 / self.t0) + (1 / self.beta) * math.log(R_ntc / self.r0))
+        
         return temp_kelvin - 273.15
