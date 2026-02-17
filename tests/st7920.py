@@ -25,24 +25,19 @@ class Screen(Canvas):
 
         self.cmdbuf = bytearray(33) # enough for 1 header byte plus 16 graphic bytes encoded as two bytes each
         self.cmdmv = memoryview(self.cmdbuf)
+
+        self.resetDisplayPin = resetDisplayPin 
+        self.slaveSelectPin = slaveSelectPin
         
         if spi is not None:
             self.spi = spi
         else:
-            polarity=0
-            phase=0
-            if sck or mosi or miso: # any pins are identified - wire up as software SPI
-                if not(sck and mosi and miso):
-                    raise AssertionError("All SPI pins sck, mosi and miso need to be specified")
-                self.spi = SPI(-1, baudrate=baudrate, polarity=polarity, phase=phase, sck=sck, mosi=mosi, miso=miso)
-            else:
-                self.spi = SPI(1, baudrate=1800000, polarity=0, phase=0)
+            # Pro ESP32-S3 specifikujeme piny přímo v SPI(1)
+            # MISO u LCD 12864 nepotřebujeme, ale SPI ho vyžaduje (použij libovolný volný pin)
+            self.spi = SPI(1, baudrate=baudrate, polarity=1, phase=1, sck=sck, mosi=mosi, miso=miso)
 
         # allocate frame buffer just once, use memoryview-wrapped bytearrays for rows
         self.fbuff = [memoryview(bytearray(colBound)) for rowPos in range(rowBound)]
- 
-        self.resetDisplayPin = Pin(16, Pin.OUT)  # D0 = GPIO16 (reset)
-        self.slaveSelectPin = Pin(15, Pin.OUT)   # D8 = GPIO15 (CS)
 
 
         self.set_rotation(0)  # rotate to 0 degrees

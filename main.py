@@ -4,6 +4,7 @@ from tests.lcd import Lcd
 from tests.encoder import Encoder
 from tests.rele import Rele
 from tests.thermistor import Thermistor
+from machine import Pin, ADC
 
 t1 = 0
 t2 = 0
@@ -14,12 +15,13 @@ goal_temp = 0
 index = 0
 change = True
 heating = False
+t_ch = 0
 
-encoder = Encoder(clk_pin=5, dt_pin=4, sw_pin=0)
+encoder = Encoder(clk_pin=5, dt_pin=4, sw_pin=6)
 display = Lcd()
 rele = Rele(2)
 rele.relay_off()
-thermistor = Thermistor(0, 100000, 100000, 3950, 298.15)
+thermistor = Thermistor(Pin(1), 100000, 100000, 3950, 298.15)
 
 def handle_preset_heat_action(index):
     global goal_temp, heating 
@@ -167,10 +169,10 @@ while True:
 
         change = True
 
-    if change: 
+    if change or (t_ch == 400): 
         display.clear()
 
-        main.change_temp(t1, 0, 0)
+        main.change_temp(t1, t2, t3)
         
         m1 = current.menu[0] if len(current.menu) > 0 else ""
         m2 = current.menu[1] if len(current.menu) > 1 else ""
@@ -187,6 +189,7 @@ while True:
         
         display.show()
         change = False
+        t_ch = 0
 
 
     if heating:
@@ -196,7 +199,7 @@ while True:
 
         else:
             rele.relay_off()
-    
 
+    t_ch += 1
 
     utime.sleep_ms(10)

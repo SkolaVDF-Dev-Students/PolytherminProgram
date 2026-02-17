@@ -1,4 +1,5 @@
 from tests.st7920 import Screen
+from machine import Pin
 
 
 class Lcd:
@@ -48,7 +49,7 @@ class Lcd:
     }
 
     def __init__(self):
-        self.lcd = Screen()
+        self.lcd = Screen(sck=Pin(12), mosi=Pin(11), miso=Pin(14), slaveSelectPin=Pin(10), resetDisplayPin=Pin(13))
         self.lcd.clear()
         self.plot = self.lcd.create_plotter()
 
