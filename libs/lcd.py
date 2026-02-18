@@ -1,4 +1,4 @@
-from tests.st7920 import Screen
+from libs.st7920 import Screen
 import utime
 
 class Lcd:

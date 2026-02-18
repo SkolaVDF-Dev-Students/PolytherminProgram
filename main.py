@@ -1,9 +1,9 @@
 import machine
 import utime
-from tests.lcd import Lcd
-from tests.encoder import Encoder
-from tests.rele import Rele
-from tests.thermistor import Thermistor
+from libs.lcd import Lcd
+from libs.encoder import Encoder
+from libs.rele import Rele
+from libs.thermistor import Thermistor
 from machine import Pin, ADC
 
 t1 = 0
