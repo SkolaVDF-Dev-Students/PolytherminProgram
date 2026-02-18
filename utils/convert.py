@@ -1,0 +1,19 @@
+def convert_to_bytes(piskel_data):
+    """
+    Převede Piskel formát (0x00000000/0xff000000) na kompaktní bajty
+    """
+    bytes_data = []
+    for i in range(0, len(piskel_data), 8):
+        byte = 0
+        for bit in range(8):
+            if i + bit < len(piskel_data):
+                if piskel_data[i + bit] != 0x00000000:
+                    byte |= (1 << (7 - bit))
+        bytes_data.append(byte)
+    return bytes_data
+
+# Tvoje cold data
+cold_piskel = []
+# Konverze
+cold_compact = convert_to_bytes(cold_piskel)
+print(cold_compact)  # Vytiskne 75 bajtů
