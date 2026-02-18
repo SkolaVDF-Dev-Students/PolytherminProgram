@@ -1,4 +1,5 @@
 from tests.st7920 import Screen
+import utime
 
 class Lcd:
     FONT = {
@@ -134,7 +135,7 @@ class Lcd:
 
         if t1 < 20:
             icon = cold_icon
-        elif t1 < 300:
+        elif t1 > 20 and t1 < 300:
             icon = heating_icon
         else:
             icon = hot_icon
@@ -174,3 +175,38 @@ class Lcd:
     def draw_heat_settings(self, goal_temp):
         """Vykreslí nastavení cílové teploty"""
         self.draw_text(f"GOAL TEMP: {goal_temp}", 30, 25)
+
+    def draw_boot_screen(self, type, x, y, time):
+        """Vykresli boot screen s logami, cas v sekundach"""
+        ustecky_kraj_icon = [0, 0, 0, 3, 224, 0, 0, 0, 0, 0, 7, 192, 0, 0, 0, 0, 0, 15, 128, 0, 0, 0, 0, 0, 31, 0, 0, 0, 0, 0, 0, 62, 0, 0, 0, 0, 0, 0, 124, 0, 0, 0, 0, 0, 0, 248, 0, 0, 0, 0, 0, 1, 240, 0, 0, 15, 128, 0, 3, 224, 3, 252, 31, 0, 0, 7, 192, 15, 240, 127, 0, 28, 15, 128, 63, 128, 254, 1, 248, 31, 0, 254, 1, 252, 31, 248, 62, 3, 248, 3, 248, 63, 240, 124, 15, 224, 3, 224, 127, 128, 248, 63, 128, 7, 192, 0, 1, 240, 254, 0, 0, 0, 0, 3, 227, 248, 0, 0, 0, 0, 7, 207, 224, 0, 0, 0, 0, 15, 191, 128, 0, 0, 0, 0, 31, 255, 128, 0, 0, 0, 0, 63, 255, 128, 0, 0, 0, 0, 127, 255, 0, 63, 0, 7, 224, 255, 255, 0, 126, 0, 15, 193, 254, 127, 0, 252, 0, 31, 131, 248, 127, 1, 248, 0, 63, 7, 224, 254, 3, 240, 0, 124, 15, 128, 254, 3, 240, 1, 248, 31, 0, 254, 7, 224, 3, 240, 62, 0, 252, 7, 224, 15, 192, 124, 1, 252, 15, 240, 127, 128, 248, 1, 252, 15, 255, 254, 1, 240, 1, 248, 15, 255, 248, 3, 224, 3, 248, 15, 255, 224, 7, 192, 3, 248, 7, 255, 0, 15, 128, 3, 248, 1, 240, 0, 0, 0, 0, 0]
+        skolavdf_icon = [255, 255, 253, 255, 255, 255, 255, 255, 223, 255, 255, 127, 255, 253, 255, 255, 227, 255, 255, 223, 255, 252, 63, 255, 253, 255, 255, 193, 255, 255, 223, 255, 248, 31, 255, 253, 255, 255, 128, 255, 255, 223, 255, 240, 15, 255, 253, 255, 255, 0, 127, 224, 0, 63, 224, 3, 255, 0, 7, 252, 0, 63, 248, 0, 255, 192, 1, 255, 128, 15, 248, 0, 31, 252, 1, 255, 128, 0, 255, 224, 63, 240, 0, 15, 254, 3, 255, 0, 0, 127, 128, 15, 224, 0, 3, 227, 6, 60, 0, 0, 56, 240, 120, 192, 0, 0, 63, 7, 224, 0, 0, 15, 248, 255, 128, 0, 0, 255, 223, 248, 0, 0, 15, 253, 255, 128, 0, 0, 127, 255, 240, 0, 0, 3, 255, 254, 0, 0, 0, 63, 255, 224, 0, 0, 1, 255, 252, 0, 0, 0, 31, 255, 192, 0, 0, 0, 255, 248, 0, 0, 0, 15, 255, 128, 0, 0, 0, 127, 240, 0, 0, 0, 3, 254, 0, 0, 0, 0, 63, 224, 0, 0, 0, 1, 252, 0, 0, 0, 0, 31, 192, 0, 0, 0, 0, 248, 0, 0, 0, 0, 15, 128, 0, 0, 0, 0, 112, 0, 0, 0, 0, 2, 0, 0, 0]
+
+        if type == False:
+                print("ustecky kraj logo")
+
+                for row in range(55):
+                    for col in range(36):
+                        pixel_index = row * 36 + col 
+                        byte_index = pixel_index // 8
+                        bit_position = 7 - (pixel_index % 8)
+                        
+                        if byte_index < len(ustecky_kraj_icon):
+                            if ustecky_kraj_icon[byte_index] & (1 << bit_position):
+                                self.plot(x + col, y + row)
+
+        elif type == True:
+            print("skolavdf logo")
+
+            for row in range(44):
+                for col in range(39):
+                    pixel_index = row * 39 + col 
+                    byte_index = pixel_index // 8
+                    bit_position = 7 - (pixel_index % 8)
+                    
+                    if byte_index < len(skolavdf_icon):
+                        if skolavdf_icon[byte_index] & (1 << bit_position):
+                            self.plot(x + col, y + row)
+        else:
+            return "Jsi picus bud true nebo false :P"
+
+        utime.sleep(time)

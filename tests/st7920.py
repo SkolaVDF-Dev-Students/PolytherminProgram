@@ -6,7 +6,7 @@ rowBound = 64
 colBound = 128 // 8
 
 class Screen:
-    def __init__(self, sck=12, mosi=11, cs=10, rst=9, baudrate=1000000):
+    def __init__(self, sck=12, mosi=11, cs=10, rst=13, baudrate=1000000):
         # Inicializace SPI na ESP32-S3 (Hardwarové SPI2)
         # S3 vyžaduje definici pinů přímo v konstruktoru SPI
         self.spi = SPI(2, baudrate=baudrate, polarity=0, phase=0, sck=Pin(sck), mosi=Pin(mosi))

@@ -133,6 +133,14 @@ heat.add_child(2, manual)
 
 current = main
 
+# Boot screen
+
+# nvm jestli funguje melo by to vykreslit loga
+# display.draw_boot_screen(typ. 0 = ustecky kraj, 1 = skolavdf), x, y, cas (v sekundach))
+display.clear()
+display.draw_boot_screen(True, 0, 0, 3)
+display.draw_boot_screen(False, 56, 0, 3)
+display.show()
 
 while True:
     encoder_rotation = encoder.on_rotate()
