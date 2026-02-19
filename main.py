@@ -17,7 +17,7 @@ change = True
 heating = False
 t_ch = 0
 
-encoder = Encoder(clk_pin=5, dt_pin=4, sw_pin=6)
+encoder = Encoder(clk_pin=5, dt_pin=4, sw_pin=7)
 display = Lcd()
 rele = Rele(2)
 rele.relay_off()
