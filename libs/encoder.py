@@ -1,6 +1,6 @@
 import machine
 import utime
-from rotary_irq_esp import RotaryIRQ
+from libs.rotary_irq_esp import RotaryIRQ
 
 # neotestovano lol
 
@@ -8,7 +8,7 @@ class Encoder:
     def __init__(self, clk_pin, dt_pin, sw_pin):
         self.r = RotaryIRQ(pin_num_clk=clk_pin, 
                           pin_num_dt=dt_pin, 
-                          pull_up=False)
+                          pull_up=True)
         
         self.sw = machine.Pin(sw_pin, machine.Pin.IN, machine.Pin.PULL_UP)
         
