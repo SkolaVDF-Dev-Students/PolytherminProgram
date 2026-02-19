@@ -23,6 +23,14 @@ rele = Rele(2)
 rele.relay_off()
 thermistor = Thermistor(Pin(1), 100000, 100000, 3950, 298.15)
 
+def boot_screen():
+    # funguje melo by to vykreslit loga
+
+    display.clear()
+    display.draw_boot_screen(0, 0)
+    display.show()
+    utime.sleep(3)
+
 def handle_preset_heat_action(index):
     global goal_temp, heating 
     """Akce pro menu vytápění"""
@@ -111,11 +119,7 @@ class Menu:
         self.menu = [f"T1: {int(t1)} C", f"T2: {int(t2)} C", f"T3: {int(t3)} C"]
 
 # Boot screen
-# funguje melo by to vykreslit loga
-display.clear()
-display.draw_boot_screen(0, 0)
-display.show()
-utime.sleep(3)
+boot_screen()
 
 main = Menu("Main", [f"T1: {int(t1)} C", f"T2: {int(t2)} C", f"T3: {int(t3)} C"], scrollable=False)
 

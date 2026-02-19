@@ -16,7 +16,7 @@ class Encoder:
         self.last_button = 0
         
         self._last_click_time = 0
-        self._debounce_ms = 50 # debounce 50ms
+        self._debounce_ms = 200 # debounce 200ms (50ms trochu bugovalo)
 
         # IRQ pro tlacitko. rotary_irq_esp nema podporu pro tlacitko
         self.sw.irq(trigger=machine.Pin.IRQ_FALLING | machine.Pin.IRQ_RISING, handler=self._click_handler)
