@@ -27,13 +27,25 @@ LCD pin | ESP32-S3 pin| GPIO   | Popis
 19 BLA  | 5V          | -      | Podsvícení modrá
 20 BLK  | GND         | -      | Podsvícení zem
 
-# Spuštění kódu
-- Pokud máte stroj, **kód se vám spustí sám po zapojení stroje**. Pokud sestavujete stroj nebo jste vývojář, potřebujete mít nejdřive splněno několik náležitostí.
 
-1. Otevřeme elektrobox a odpojíme ESP32 od napájení. 
-2. Připojíme náše ESP32 k PC pomocí USB-C kabelu (Kabel musí být schopen přenášet data.).
+# Instalace programu při sestavení stroje
+1. Připojíme naše ESP32 k PC pomocí USB-C kabelu (Kabel musí být schopen přenášet data.).
+2. Stáhneme si oficiální kód pro stroj na https://example.com/
 3. Pokud nemáme na našem PC python, nainstalujeme ho.
 4. Nainstalujeme mpremote pomocí pip: `pip install mpremote`
-5. Poté co máme vše nainstalováno, spustíme tento příkaz a připojíme se k ESP32: `python -m mpremote mount .`
+5. Poté co máme vše nainstalováno, spustíme tento příkaz a připojíme **náš aktualní adresář** k ESP32: `python -m mpremote mount .`
+6. **Otestujeme zda vše funguje.**
+7. Nahrajeme kompletní zdrojový kód pomocí: `mpremote connect auto fs cp -r . :`
 
-- Odtud už lze spustit kterýkoliv script. Např. spustíme main.py `import main`
+
+# Testování a další vývoj kódu
+- Kód si můžete přispůsobit podle licence
+- Kód lze vyvíjet velice efektivně v jakémkoliv IDE
+
+
+## Užitečné příkazy
+- Připojení našeho aktuální adresáře do ESP32 a vstup do REPLu -  `python -m mpremote mount .`
+- Spuštění scriptu v REPLu  - `import main`
+- Soft-reset REPLu (např. změna kódu, kód se neaktualizuje po uložení) - CTRL + D
+- Exit kódu - CTRL + C
+- Exit REPLu - CTRL + Q 
