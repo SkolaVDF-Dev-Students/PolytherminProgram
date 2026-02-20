@@ -2,13 +2,13 @@ import machine
 import utime
 from libs.rotary_irq_esp import RotaryIRQ
 
-# neotestovano lol
+# neotestovano lol - nevadi
 
 class Encoder:
-    def __init__(self, clk_pin, dt_pin, sw_pin):
+    def __init__(self, clk_pin, dt_pin, sw_pin, debounce):
         self.r = RotaryIRQ(pin_num_clk=clk_pin, 
                           pin_num_dt=dt_pin, 
-                          pull_up=True) # true = když nejsou zapojeny kondiky atd.
+                          pull_up=True) # true = kdyz nejsou zapojeny kondiky atd. 
         
         self.sw = machine.Pin(sw_pin, machine.Pin.IN, machine.Pin.PULL_UP)
         
@@ -16,14 +16,14 @@ class Encoder:
         self.last_button = 0
         
         self._last_click_time = 0
-        self._debounce_ms = 200 # debounce 200ms (50ms trochu bugovalo)
+        self._debounce_ms = debounce # debounce 200ms best (50ms trochu bugovalo), upravil sem na promenou tridy nejak se tomu rika nevim jak :D
 
         # IRQ pro tlacitko. rotary_irq_esp nema podporu pro tlacitko
         self.sw.irq(trigger=machine.Pin.IRQ_FALLING | machine.Pin.IRQ_RISING, handler=self._click_handler)
 
     def on_rotate(self):
         """
-        Vrátí 1 (Clockwise), -1 (Counter clockwise) nebo 0 a resetuje vnitřní stav.
+        Return 1 (Clockwise), -1 (Counter clockwise) or 0 a resetuje vnittni stav.
         """
         current_val = self.r.value()
         diff = current_val - self.last_val
@@ -37,7 +37,7 @@ class Encoder:
     
     def on_click(self):
         """
-        Vrátí 1 (stisk), -1 (uvolnění) nebo 0.
+        Return 1 (stisk), -1 (uvolneni), 0 (idk bracho)
         """
         value = self.last_button
         self.last_button = 0

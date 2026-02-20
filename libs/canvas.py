@@ -2,7 +2,7 @@ def raiseError(*a, **k):
     raise NotImplementedError()
 
 class Canvas:
-
+    """Canvas lib. Nothing interesting. You dont need this. If you trying use this use Lcd."""
     width=128
     height=64
     clear = raiseError
