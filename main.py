@@ -6,97 +6,96 @@ from libs.rele import Rele
 from libs.thermistor import Thermistor
 from machine import Pin, ADC
 
+# teploty termistoru
 t1 = 0
 t2 = 0
 t3 = 0
 
+# cilova temp
 goal_temp = 0
 
+# globalni promene
 index = 0
 change = True
 heating = False
 t_ch = 0
 
-encoder = Encoder(clk_pin=5, dt_pin=4, sw_pin=7)
+# nastaveni periferii
+encoder = Encoder(clk_pin=5, dt_pin=4, sw_pin=7, debounce=200)
+thermistor = Thermistor(Pin(1), 100000, 100000, 3950, 298.15)
 display = Lcd()
 rele = Rele(2)
 rele.relay_off()
-thermistor = Thermistor(Pin(1), 100000, 100000, 3950, 298.15)
 
-def boot_screen():
-    # funguje melo by to vykreslit loga
 
-    display.clear()
-    display.draw_boot_screen(0, 0)
-    display.show()
-    utime.sleep(3)
+class Actions:
+    @staticmethod
+    def preset_heat(index):
+        global goal_temp, heating 
+        """Akce pro menu vytápění"""
+        if index == 1:
+            goal_temp = 300
+            heating = True
 
-def handle_preset_heat_action(index):
-    global goal_temp, heating 
-    """Akce pro menu vytápění"""
-    if index == 1:
-        goal_temp = 300
-        heating = True
+        elif index == 2:
+            goal_temp = 250
+            heating = True
 
-    elif index == 2:
-        goal_temp = 250
-        heating = True
+    @staticmethod
+    def manual_heat(index):
+        """Akce pro menu vytápění"""
+        global goal_temp, heating
+        if index == 1:
+            while True:
+                encoder_rotation = encoder.on_rotate()
+                encoder_click = encoder.on_click()
 
-def handle_manual_heat_action(index):
-    """Akce pro menu vytápění"""
-    global goal_temp, heating
-    if index == 1:
-        while True:
-            encoder_rotation = encoder.on_rotate()
-            encoder_click = encoder.on_click()
+                if encoder_rotation == -1:
+                    goal_temp += 10
 
-            if encoder_rotation == -1:
-                goal_temp += 10
+                elif encoder_rotation == 1:
+                    if goal_temp > 0:
+                        goal_temp -= 10
 
-            elif encoder_rotation == 1:
-                if goal_temp > 0:
-                    goal_temp -= 10
+                if encoder_click == 1:
+                    heating = True
+                    break
+                
+                display.clear()
+                display.draw_heat_settings(goal_temp)
+                display.show()   
 
-            if encoder_click == 1:
-                heating = True
-                break
-            
-            display.clear()
-            display.draw_heat_settings(goal_temp)
-            display.show()   
+                utime.sleep_ms(10)  
 
-            utime.sleep_ms(10)  
+        elif index == 2:
+            while True:
+                encoder_rotation = encoder.on_rotate()
+                encoder_click = encoder.on_click()
+                if encoder_rotation == -1:
+                    goal_temp += 1
 
-    elif index == 2:
-        while True:
-            encoder_rotation = encoder.on_rotate()
-            encoder_click = encoder.on_click()
-            if encoder_rotation == -1:
-                goal_temp += 1
+                elif encoder_rotation == 1:
+                    if goal_temp > 0:
+                        goal_temp -= 1
+                
+                if encoder_click == 1:
+                    heating = True
+                    break
 
-            elif encoder_rotation == 1:
-                if goal_temp > 0:
-                    goal_temp -= 1
-            
-            if encoder_click == 1:
-                heating = True
-                break
+                display.clear()
+                display.draw_heat_settings(goal_temp)
+                display.show() 
 
-            display.clear()
-            display.draw_heat_settings(goal_temp)
-            display.show() 
+                utime.sleep_ms(10)   
 
-            utime.sleep_ms(10)   
-
-            
-
-def handle_cool_action(index):
-    """Start cooling"""
-    global heating
-    if index == 1:
-        heating = False
-        rele.relay_off()
-        print("TURNING RELAY OFF")
+                
+    @staticmethod
+    def cool(index):
+        """Start cooling"""
+        global heating
+        if index == 1:
+            heating = False
+            rele.relay_off()
 
 class Menu:
     def __init__(self, name, menu_lines, parent=None, scrollable=True, action=None):
@@ -118,17 +117,16 @@ class Menu:
     def change_temp(self, t1, t2, t3):
         self.menu = [f"T1: {int(t1)} C", f"T2: {int(t2)} C", f"T3: {int(t3)} C"]
 
-# Boot screen
-boot_screen()
+
 
 main = Menu("Main", [f"T1: {int(t1)} C", f"T2: {int(t2)} C", f"T3: {int(t3)} C"], scrollable=False)
 
 # Podmenu
 sub = Menu("Sub", ["BACK", "HEAT UP", "COOL DOWN"])
 heat = Menu("Heat", ["BACK", "PRESET", "MANUAL"])
-preset = Menu("Heat", ["BACK", "PET", "PP"], action=handle_preset_heat_action)
-manual = Menu("Heat", ["BACK", "ARANGE 10 C", "ARANGE 1 C"], action=handle_manual_heat_action)
-cool = Menu("Cool", ["BACK", "START COOLING", ""], action=handle_cool_action)
+preset = Menu("Heat", ["BACK", "PET", "PP"], action=Actions.preset_heat)
+manual = Menu("Heat", ["BACK", "ARANGE 10 C", "ARANGE 1 C"], action=Actions.manual_heat)
+cool = Menu("Cool", ["BACK", "START COOLING", ""], action=Actions.cool)
 
 main.add_child(0, sub) 
 main.add_child(1, sub)
@@ -143,6 +141,11 @@ heat.add_child(2, manual)
 
 current = main
 
+# boot scren - na co def? to rovnou udelame fasadu z celyho startu :D
+display.clear()
+display.draw_boot_screen(0, 0)
+display.show()
+utime.sleep(3)
 
 while True:
     encoder_rotation = encoder.on_rotate()
@@ -203,7 +206,6 @@ while True:
 
 
     if heating:
-        # 300 > 300
         if goal_temp > t1:
             rele.relay_on()
 
