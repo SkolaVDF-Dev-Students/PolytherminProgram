@@ -1,14 +1,14 @@
 from machine import Pin, SPI
 from time import sleep
 
-# Rozměry framebufferu
+# Rozmery framebufferu
 rowBound = 64
 colBound = 128 // 8
 
 class Screen:
     def __init__(self, sck=12, mosi=11, cs=10, rst=13, baudrate=1000000):
         # Inicializace SPI na ESP32-S3 (Hardwarové SPI2)
-        # S3 vyžaduje definici pinů přímo v konstruktoru SPI
+        # S3 vyzaduje definici pinu přímo v konstruktoru SPI
         self.spi = SPI(2, baudrate=baudrate, polarity=0, phase=0, sck=Pin(sck), mosi=Pin(mosi))
         
         self.cs = Pin(cs, Pin.OUT)
@@ -30,7 +30,7 @@ class Screen:
         self.reset()
         self.select(True)
         
-        # Sekvence příkazů pro ST7920
+        # Sekvence prikazu pro ST7920
         self.send_flag(0x30)  # Basic instruction set
         sleep(0.01)
         self.send_flag(0x30)  # Repeated
@@ -87,7 +87,7 @@ class Screen:
     def redraw(self):
         self.select(True)
         for i in range(64):
-            # ST7920 adresování: 0-31 horní polovina, 32-63 spodní polovina
+            # ST7920 adresovani: 0-31 horni polovina, 32-63 spodni polovina
             y_addr = 0x80 + (i % 32)
             x_addr = 0x80 + (0 if i < 32 else 8)
             self.send_address(y_addr, x_addr)
