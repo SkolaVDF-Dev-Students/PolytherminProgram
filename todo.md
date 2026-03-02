@@ -1,5 +1,4 @@
 - heating procenta
-- 3 termistory
+- 3 termistory - komplet dodelat - > prumery atd
 - dynamicke generovani menu arrows
-- delat prumer z teplot -> presnejsi teplota
 - efektivnejsi zahrivani -> nekontrolovat hned po par loopechs

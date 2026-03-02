@@ -1,68 +1,73 @@
 from machine import ADC, Pin
-import math
 import time
 
-# --- KONFIGURACE ---
-ADC_PIN = 4        # GPIO, kam máš zapojený střed děliče
-R_REF = 1120        # Odpor tvého fixního rezistoru (změř ho multimetrem pro přesnost)
-V_SYS = 3.3           # Napětí na 3V3 pinu ESP32
-R0 = 1000.0           # 1000 pro Pt1000, 100 pro Pt100
+# =====================================================
+# KONFIGURACE - ZMĚŇ ZDE SVÉ HODNOTY
+# =====================================================
+adc = ADC(Pin(1))           # GPIO1 = ADC pin (změň na svůj pin, např. Pin(2))
+adc.atten(ADC.ATTN_11DB)    # Rozsah 0-3.3V (nutné pro měření)
 
-class PtDiagnostic:
-    def __init__(self, pin_id):
-        self.adc = ADC(Pin(pin_id))
-        self.adc.atten(ADC.ATTN_11DB)  # Rozsah do 3.3V
-        self.adc.width(ADC.WIDTH_12BIT) # Rozlišení 0-4095
+R_REF = 988.0               # TVŮJ REZISTOR 988 OHM - změřený multimetrem!
 
-    def read_all(self):
-        # 1. Čtení surového ADC (průměr z 50 vzorků pro stabilitu)
+# KALIBRACE - uprav podle měření
+# OFFSET: pokud kód ukazuje MÍŇ teplotu → ZVĚTŠI (+), VÍCE → ZMĚŇŠI (-)
+OFFSET = 0.0                # Např. +2.3 nebo -1.5 podle testu
+
+# GAIN: jen pokud chyba roste s teplotou (většinou 1.0 stačí)
+GAIN = 1.0                  # Např. 0.98 pokud vysoké teploty jsou podceněné
+
+print("PT1000 DEBUG s R_REF=988Ω")
+print("Zapojení: 3V3 ─── 988Ω ─── GPIO1 ─── PT1000 ─── GND")
+print("Kalibrace: změř termometrem, uprav OFFSET/GAIN výše")
+print("Ctrl+C = stop\n")
+
+try:
+    while True:
+        # ================================
+        # MĚŘENÍ - průměr 20 hodnot pro stabilitu (méně šumu)
+        # ================================
         raw_sum = 0
-        for _ in range(50):
-            raw_sum += self.adc.read()
-        avg_raw = raw_sum / 50
+        for i in range(20):
+            raw_sum += adc.read()  # 0-4095 (12bit)
+        raw = raw_sum / 20
+        print(f"DEBUG: RAW průměr={raw:.1f} z 20 měření")
         
-        # 2. Převod na napětí (teoretické)
-        v_out = (avg_raw / 4095.0) * V_SYS
+        # ================================
+        # VÝPOČET NAPĚTÍ
+        # ================================
+        napeti = raw * 3.3 / 4095
+        print(f"      Napětí na ADC: {napeti:.3f} V")
         
-        # 3. Výpočet odporu senzoru
-        # Předpoklad: 3.3V -> R_REF -> ADC_PIN -> SENSOR -> GND
-        if avg_raw >= 4090:
-            res_status = "ROZPOJENO (Open Circuit)"
-            resistance = float('inf')
-        elif avg_raw <= 5:
-            res_status = "ZKRAT (Short Circuit)"
-            resistance = 0.0
+        # ================================
+        # VÝPOČET ODPO RU PT1000
+        # Vzorec: R_pt1000 = R_REF * V_adc / (3.3 - V_adc)
+        # ================================
+        if napeti < 3.29:  # Bezpečnostní kontrola
+            r_pt1000 = R_REF * napeti / (3.3 - napeti)
         else:
-            res_status = "OK"
-            resistance = (v_out * R_REF) / (V_SYS - v_out)
+            r_pt1000 = 9999   # Chyba - senzor otevřený
+        print(f"      Odpor PT1000: {r_pt1000:.1f} Ω (při 0°C=1000Ω)")
         
-        # 4. Výpočet teploty (Callendar-Van Dusen)
-        A = 3.9083e-3
-        B = -5.775e-7
-        temp = -999
-        if res_status == "OK":
-            try:
-                det = (A**2) - (4 * B * (1 - resistance / R0))
-                temp = (-A + math.sqrt(det)) / (2 * B)
-            except:
-                temp = -998
-                
-        return avg_raw, v_out, resistance, res_status, temp
+        # ================================
+        # VÝPOČET TEPLOTY
+        # Lineární: R = 1000 + 3.85 * T (°C) pro PT1000
+        # T = (R - 1000) / 3.85
+        # ================================
+        teplota = (r_pt1000 - 1000.0) / 3.85
+        teplota_kalib = GAIN * teplota + OFFSET
+        
+        # ================================
+        # VÝPIS VŠECH HODNOT
+        # ================================
+        print(f"VÝSLEDEK: RAW:{raw:5.0f} V:{napeti:4.3f} R:{r_pt1000:6.1f} T:{teplota:6.2f}°C KALIB:{teplota_kalib:6.2f}°C")
+        print("-" * 60)
+        
+        time.sleep(2)  # Měření každé 2 sekundy
 
-# Inicializace
-diag = PtDiagnostic(ADC_PIN)
-
-print("-" * 50)
-print("DIAGNOSTIKA PT1000 / PT100")
-print(f"Konfigurace: R_REF={R_REF} Ohm, R0={R0} Ohm")
-print("-" * 50)
-
-while True:
-    raw, volt, res, status, temp = diag.read_all()
-    
-    print(f"ADC: {raw:>7.1f} | U: {volt:.3f}V | R_senzor: {res:>8.2f} Ohm | Stav: {status}")
-    if status == "OK":
-        print(f"   >>> VYPOČTENÁ TEPLOTA: {temp:.2f} °C <<<")
-    print("-" * 50)
-    
-    time.sleep(2)
+except KeyboardInterrupt:
+    print("\n=== UKONČENO ===")
+    print("KALIBRACE:")
+    print("1. Změř termometrem (např. pokoj 23°C)")
+    print("2. Pokud KALIB ukazuje 21°C → OFFSET = +2.0")
+    print("3. Restartuj kód")
+    print("Očekávané: 25°C → R~1096Ω, RAW~2080")
