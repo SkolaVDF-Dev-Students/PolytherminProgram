@@ -1,7 +1,6 @@
 from machine import ADC, Pin
-import network
 
-class Pt1000:
+class Thermistor:
     def __init__(self, pin_id, r_ref=989.0, offset=0.0, gain=1.0):
         """
         Inicializace senzoru Pt1000.
@@ -10,9 +9,6 @@ class Pt1000:
         :param offset: Kalibrační posun (přičítá se k výsledku)
         :param gain: Kalibrační násobič (zesílení)
         """
-        # Vypnutí Wi-Fi pro snížení šumu ADC
-        network.WLAN(network.STA_IF).active(False)
-        network.WLAN(network.AP_IF).active(False)
 
         self.adc = ADC(Pin(pin_id))
         self.adc.atten(ADC.ATTN_11DB)  # Rozsah 0-3.3V

@@ -1,9 +1,10 @@
 import machine
 import utime
+import network
 from libs.lcd import Lcd
 from libs.encoder import Encoder
 from libs.rele import Rele
-from libs.thermistor import Pt1000
+from libs.thermistor import Thermistor
 from machine import Pin, ADC
 
 # teploty termistoru
@@ -22,9 +23,9 @@ t_ch = 0
 
 # nastaveni periferii
 encoder = Encoder(clk_pin=5, dt_pin=4, sw_pin=7, debounce=200)
-sensor1 = Pt1000(pin_id=1, r_ref=989.0, offset=24, gain=1.0)
-sensor2 = Pt1000(pin_id=2, r_ref=982.0, offset=25, gain=1.0)
-sensor3 = Pt1000(pin_id=14, r_ref=986.0, offset=27, gain=1.0)
+sensor1 = Thermistor(pin_id=1, r_ref=989.0, offset=24, gain=1.0)
+sensor2 = Thermistor(pin_id=2, r_ref=982.0, offset=25, gain=1.0)
+sensor3 = Thermistor(pin_id=14, r_ref=986.0, offset=27, gain=1.0)
 display = Lcd()
 rele = Rele(6)
 rele.relay_off()
@@ -142,6 +143,10 @@ heat.add_child(2, manual)
 
 
 current = main
+
+# vypnuti wifi
+network.WLAN(network.STA_IF).active(False)
+network.WLAN(network.AP_IF).active(False)
 
 # boot scren - na co def? to rovnou udelame fasadu z celyho startu :D
 display.clear()

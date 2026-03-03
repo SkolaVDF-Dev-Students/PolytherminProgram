@@ -1,3 +1,7 @@
-- heating procenta
+- heating procenta posunout o znak doleva
 - dynamicke generovani menu arrows
-- efektivnejsi zahrivani -> nekontrolovat hned po par loopechs
+- efektivnejsi zahrivani -> nekontrolovat hned po par loopech nebo tak neco proste lip to uvarit
+- termistory kondik nebo tak neco
+- udelat pcb - bude to lepsi asi :D
+- mame dotykac - prcal bych to ALE muzem ho zkusit
+- kdo to cte tak negr :)))

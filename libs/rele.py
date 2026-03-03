@@ -1,5 +1,3 @@
-# neotestovano !!!!
-
 from machine import Pin
 
 
