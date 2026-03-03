@@ -7,15 +7,17 @@ from libs.rele import Rele
 from libs.thermistor import Thermistor
 from machine import Pin, ADC
 
-# teploty termistoru
+# teploty termistoru 
 t1 = 0
 t2 = 0
 t3 = 0
 
+
 # cilova temp
 goal_temp = 0
 
-# globalni promene
+
+# globalni promene na optimalizaci
 index = 0
 change = True
 heating = False
@@ -31,6 +33,7 @@ rele = Rele(6)
 rele.relay_off()
 
 
+# lepsi prehlednost akci v menu
 class Actions:
     @staticmethod
     def preset_heat(index):
@@ -100,6 +103,8 @@ class Actions:
             heating = False
             rele.relay_off()
 
+
+# menu nastaveni parent atd.
 class Menu:
     def __init__(self, name, menu_lines, parent=None, scrollable=True, action=None):
         self.name = name
@@ -121,16 +126,17 @@ class Menu:
         self.menu = [f"T1: {int(t1)} C", f"T2: {int(t2)} C", f"T3: {int(t3)} C"]
 
 
-
+# nastaveni main menu
 main = Menu("Main", [f"T1: {int(t1)} C", f"T2: {int(t2)} C", f"T3: {int(t3)} C"], scrollable=False)
 
-# Podmenu
+# podmenu
 sub = Menu("Sub", ["BACK", "HEAT UP", "COOL DOWN"])
 heat = Menu("Heat", ["BACK", "PRESET", "MANUAL"])
 preset = Menu("Heat", ["BACK", "PET", "PP"], action=Actions.preset_heat)
 manual = Menu("Heat", ["BACK", "ARANGE 10 C", "ARANGE 1 C"], action=Actions.manual_heat)
 cool = Menu("Cool", ["BACK", "START COOLING", ""], action=Actions.cool)
 
+# nastaveni deti EFN
 main.add_child(0, sub) 
 main.add_child(1, sub)
 main.add_child(2, sub)
@@ -148,13 +154,15 @@ current = main
 network.WLAN(network.STA_IF).active(False)
 network.WLAN(network.AP_IF).active(False)
 
-# boot scren - na co def? to rovnou udelame fasadu z celyho startu :D
+# boot screen - tu udelat async
 display.clear()
 display.draw_boot_screen(0, 0)
 display.show()
 utime.sleep(3)
 
+
 while True:
+    # cteni periferii
     encoder_rotation = encoder.on_rotate()
     encoder_click = encoder.on_click()
     t1 = sensor1.read()
@@ -162,6 +170,7 @@ while True:
     t3 = sensor3.read()
 
     
+    # zda jsme v main menu
     if current.is_scrollable:
         if encoder_rotation == 1:
             index = max(0, index - 1)
@@ -172,6 +181,8 @@ while True:
     else:
         index = -1 
 
+
+    # vyhodnoceni enkoderu
     if encoder_click == 1:
         if not current.is_scrollable:
             current = sub
@@ -192,6 +203,8 @@ while True:
 
         change = True
 
+
+    # update screenu kazde 4s nebo po interakci
     if change or (t_ch == 400): 
         display.clear()
 
@@ -220,6 +233,7 @@ while True:
         t_ch = 0
 
 
+    # nahrivani toto potreba optimalizovat
     if heating:
         if goal_temp > t1:
             rele.relay_on()
