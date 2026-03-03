@@ -3,7 +3,7 @@ import utime
 from libs.lcd import Lcd
 from libs.encoder import Encoder
 from libs.rele import Rele
-from libs.thermistor import Thermistor
+from libs.thermistor import Pt1000
 from machine import Pin, ADC
 
 # teploty termistoru
@@ -22,9 +22,11 @@ t_ch = 0
 
 # nastaveni periferii
 encoder = Encoder(clk_pin=5, dt_pin=4, sw_pin=7, debounce=200)
-thermistor = Thermistor(Pin(1), 100000, 100000, 3950, 298.15)
+sensor1 = Pt1000(pin_id=1, r_ref=989.0, offset=24, gain=1.0)
+sensor2 = Pt1000(pin_id=2, r_ref=982.0, offset=25, gain=1.0)
+sensor3 = Pt1000(pin_id=14, r_ref=986.0, offset=27, gain=1.0)
 display = Lcd()
-rele = Rele(2)
+rele = Rele(15)
 rele.relay_off()
 
 
@@ -150,7 +152,10 @@ utime.sleep(3)
 while True:
     encoder_rotation = encoder.on_rotate()
     encoder_click = encoder.on_click()
-    t1 = thermistor.readValue()
+    t1 = sensor1.read()
+    t2 = sensor2.read()
+    t3 = sensor3.read()
+
     
     if current.is_scrollable:
         if encoder_rotation == 1:
