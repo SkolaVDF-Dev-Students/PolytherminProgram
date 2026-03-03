@@ -26,7 +26,7 @@ sensor1 = Pt1000(pin_id=1, r_ref=989.0, offset=24, gain=1.0)
 sensor2 = Pt1000(pin_id=2, r_ref=982.0, offset=25, gain=1.0)
 sensor3 = Pt1000(pin_id=14, r_ref=986.0, offset=27, gain=1.0)
 display = Lcd()
-rele = Rele(15)
+rele = Rele(6)
 rele.relay_off()
 
 
@@ -201,7 +201,12 @@ while True:
             display.draw_scroll(index)
             display.draw_menu_arrows(True)
         
-        display.draw_heating()
+        if goal_temp != 0:
+            display.draw_heating(t1, goal_temp)
+
+        else:
+            display.draw_heating(0, t1)
+
         if not current.is_scrollable:
             display.draw_heat_warning(90, 10, t1) 
         

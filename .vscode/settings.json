@@ -14,5 +14,6 @@
         "~/.micropico-stubs/included",
         ".vscode/Pico-W-Stub"
     ],
-    "python.linting.enabled": true
+    "python.linting.enabled": true,
+    "idf.currentSetup": "C:\\Users\\Goober\\v5.3.1\\esp-idf"
 }
