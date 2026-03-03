@@ -5,3 +5,4 @@
 - udelat pcb - bude to lepsi asi :D
 - mame dotykac - prcal bych to ALE muzem ho zkusit
 - kdo to cte tak negr :)))
+- udelat async na bootscreen jestli bude nuda
