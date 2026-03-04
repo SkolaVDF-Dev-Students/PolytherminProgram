@@ -101,12 +101,19 @@ class Lcd:
             self.plot(x1, y)
             self.plot(x2, y)
     
-    def draw_heating(self, t1, goal_temp):
+    def draw_info_bar(self, t1, goal_temp, status):
         """Vykresli heating menicko dole"""
         self.draw_line(0, 48, 127, 48)
-        self.draw_text("HEATING", 5, 53)
-        self.draw_text(str(int((t1/goal_temp)*100)), 107, 53)
-        self.draw_text("%", 120, 53)
+        if status = "heating":
+            self.draw_text("HEATING", 5, 53)
+            self.draw_text(str(int((t1/goal_temp)*100)), 107, 53)
+            self.draw_text("%", 120, 53)
+        
+        elif status == "cooling":
+            self.draw_text("COOLING", 5, 53)
+
+        else:
+            self.draw_text("STAND BY", 5, 53)
 
     def draw_menu_lines(self):
         """Vykresli cary v menu"""

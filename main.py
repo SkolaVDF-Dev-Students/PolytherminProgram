@@ -219,11 +219,15 @@ while True:
             display.draw_scroll(index)
             display.draw_menu_arrows(True)
         
-        if goal_temp != 0:
-            display.draw_heating(t1, goal_temp)
+        if heating:
+            display.draw_info_bar(t1, goal_temp, "heating") 
 
         else:
-            display.draw_heating(0, t1)
+            if t1 < 30:
+                display.draw_info_bar(0, t1, "standby")
+            
+            else: 
+                display.draw_info_bar(0, t1, "cooling")
 
         if not current.is_scrollable:
             display.draw_heat_warning(90, 10, t1) 
