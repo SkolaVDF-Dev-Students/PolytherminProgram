@@ -134,7 +134,7 @@ sub = Menu("Sub", ["BACK", "HEAT UP", "COOL DOWN"])
 heat = Menu("Heat", ["BACK", "PRESET", "MANUAL"])
 preset = Menu("Heat", ["BACK", "PET", "PP"], action=Actions.preset_heat)
 manual = Menu("Heat", ["BACK", "ARANGE 10 C", "ARANGE 1 C"], action=Actions.manual_heat)
-cool = Menu("Cool", ["BACK", "START COOLING", ""], action=Actions.cool)
+cool = Menu("Cool", ["BACK", "START COOLING"], action=Actions.cool)
 
 # nastaveni deti EFN
 main.add_child(0, sub) 
@@ -217,7 +217,10 @@ while True:
         
         if current.is_scrollable and index >= 0:
             display.draw_scroll(index)
-            display.draw_menu_arrows(True)
+            if m3 != "":
+                display.draw_menu_arrows(True)
+            else:
+                display.draw_menu_arrows(False)
         
         if heating:
             display.draw_info_bar(t1, goal_temp, "heating") 
