@@ -1,5 +1,3 @@
-- heating procenta posunout o znak doleva
-- better bar, heating, cooling, stand by
 - efektivnejsi zahrivani -> nekontrolovat hned po par loopech nebo tak neco proste lip to uvarit
 - termistory kondik nebo tak neco
 - udelat pcb - bude to lepsi asi :D
