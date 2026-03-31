@@ -6,6 +6,7 @@ from libs.encoder import Encoder
 from libs.rele import Rele
 from libs.thermistor import Thermistor
 from machine import Pin, ADC
+from libs.piezo import Piezo
 
 # teploty termistoru 
 t1 = 0
@@ -31,6 +32,7 @@ sensor3 = Thermistor(pin_id=14, r_ref=986.0, offset=27, gain=1.0)
 display = Lcd()
 rele = Rele(6)
 rele.relay_off()
+piezo = Piezo(13)
 
 
 # lepsi prehlednost akci v menu
@@ -154,7 +156,7 @@ current = main
 network.WLAN(network.STA_IF).active(False)
 network.WLAN(network.AP_IF).active(False)
 
-# boot screen - tu udelat async
+# boot screen - tu udelat async - naser si :)
 display.clear()
 display.draw_boot_screen(0, 0)
 display.show()
@@ -184,6 +186,8 @@ while True:
 
     # vyhodnoceni enkoderu
     if encoder_click == 1:
+        piezo.click()
+
         if not current.is_scrollable:
             current = sub
             index = 0
@@ -216,6 +220,8 @@ while True:
         display.draw_menu(m1, m2, m3)
         
         if current.is_scrollable and index >= 0:
+            piezo.scroll()
+
             display.draw_scroll(index)
             if m3 != "":
                 display.draw_menu_arrows(True)
