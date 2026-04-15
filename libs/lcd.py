@@ -48,8 +48,8 @@ class Lcd:
     }
 
     def __init__(self):
-        # ESP32-S3: SCK=12, MOSI=11, CS=10, RST=13
-        self.lcd = Screen(sck=12, mosi=11, cs=10, rst=13)
+        # ESP32-S3: SCK=13, MOSI=12, CS=11, RST=14
+        self.lcd = Screen(sck=13, mosi=12, cs=11, rst=14)
         self.lcd.clear()
         self.plot = self.lcd.create_plotter()
 

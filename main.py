@@ -27,17 +27,17 @@ l_ch = 0
 
 
 # PERIFERIE
-led = Pin(17, Pin.OUT)
+led = Pin(18, Pin.OUT)
 
-encoder = Encoder(clk_pin=5, dt_pin=4, sw_pin=7, debounce=200)
+encoder = Encoder(clk_pin=4, dt_pin=5, sw_pin=6, debounce=200)
 
-sensor1 = Thermistor(pin_id=1, r_ref=989.0, offset=24, gain=1.01)
-sensor2 = Thermistor(pin_id=2, r_ref=982.0, offset=25, gain=1.0)
-sensor3 = Thermistor(pin_id=14, r_ref=986.0, offset=27, gain=1.0)
+sensor1 = Thermistor(pin_id=15, r_ref=989.0, offset=24, gain=1.01)
+sensor2 = Thermistor(pin_id=16, r_ref=982.0, offset=25, gain=1.0)
+sensor3 = Thermistor(pin_id=17, r_ref=986.0, offset=27, gain=1.0)
 
 display = Lcd()
 
-rele = Rele(pin_id=6)
+rele = Rele(pin_id=7)
 
 # zajistime ze se vypne. obcas je zaple 
 rele.relay_off()

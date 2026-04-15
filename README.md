@@ -11,31 +11,31 @@ Původní mega tabulka byla asi moc velká, tak tady to máš rozdělený na tř
 | + (VCC) | 3.3V | - | Napájení |
 | CLK (A) | IO5 | GPIO5 | Clock - točíš doprava/doleva |
 | DT (B) | IO4 | GPIO4 | Data - točíš doprava/doleva |
-| SW (Button) | IO7 | GPIO7 | Tlačítko |
+| SW (Button) | IO6 | GPIO6 | Tlačítko |
 
 ## LCD (ST7920)
 | Komponenta / Pin | ESP32-S3 Pin | GPIO | Jaký to má smysl? (Popis) |
 | :--- | :--- | :--- | :--- |
-| GND | GND | - | Zem (-) |
-| VCC | 5V | - | Napájení (+) |
+| GND (VSS) | GND | - | Zem (-) |
+| VCC (VDD) | 5V | - | Napájení (+) |
 | V0 | Potenciometr | - | Kontrast (10kΩ zapojený mezi GND a 5V) |
-| RS | IO10 | GPIO10 | SPI: CS / Slave Select |
-| R/W | IO11 | GPIO11 | SPI: MOSI / Data |
-| E | IO12 | GPIO12 | SPI: SCK / Clock |
+| CS (RS) | IO11 | GPIO11 | SPI: CS / Slave Select |
+| SID (R/W) | IO12 | GPIO12 | SPI: MOSI / Sériový data |
+| CLK (E) | IO13 | GPIO13 | SPI: SCK / Hodiny |
 | PSB | GND | - | SPI mód (MUSÍ bejt píchnuto do GND!) |
 | NC | - | - | Nepřipojovat (fakt nesahej) |
-| RST | IO13 | GPIO13 | Reset displeje |
-| BLA | 5V | - | Podsvícení modrá (+) |
-| BLK | GND | - | Podsvícení zem (-) |
+| RST | IO14 | GPIO14 | Reset displeje |
+| A (BLA) | 5V | - | Podsvícení anoda (+) |
+| K (BLK) | GND | - | Podsvícení katoda (-) |
 
 ## Ostatní
 | Komponenta / Pin | ESP32-S3 Pin | GPIO | Jaký to má smysl? (Popis) |
 | :--- | :--- | :--- | :--- |
-| Termistor 1 (T1) | IO1 | GPIO1 | Snímání teploty (r_ref=989.0, off: 24) |
-| Termistor 2 (T2) | IO2 | GPIO2 | Snímání teploty (r_ref=982.0, off: 25) |
-| Termistor 3 (T3) | IO14 | GPIO14 | Snímání teploty (r_ref=986.0, off: 27) |
-| Relé topení | IO6 | GPIO6 | Spínání vyhřívání lisu (jestli to blafne, tvůj boj) |
-| LED indikace | IO17 | GPIO17 | Varovná kontrolka
+| Termistor 1 (T1) | IO15 | GPIO15 | Snímání teploty (r_ref=989.0, off: 24) |
+| Termistor 2 (T2) | IO16 | GPIO16 | Snímání teploty (r_ref=982.0, off: 25) |
+| Termistor 3 (T3) | IO17 | GPIO17 | Snímání teploty (r_ref=986.0, off: 27) |
+| Relé topení | IO7 | GPIO7 | Spínání vyhřívání lisu (jestli to blafne, tvůj boj) |
+| LED indikace | IO18 | GPIO18 | Varovná kontrolka (> 70°C, ať si neopálíš pracky) |
 
 ## Zapojení ještě znovu
 ```text
@@ -45,23 +45,23 @@ Původní mega tabulka byla asi moc velká, tak tady to máš rozdělený na tř
        (Enc VCC) -| 3V3                   GND |- (LCD_GND a BLK, Enc_GND, T_GND)
                   | 3V3                  IO43 |
                   | RST                  IO44 |
-        (Enc DT) -| IO4                   IO1 |- (Termistor 1)
-       (Enc CLK) -| IO5                   IO2 |- (Termistor 2)
-          (Relé) -| IO6                  IO42 |
-        (Enc SW) -| IO7                  IO41 |
-                  | IO15                 IO40 |
-                  | IO16                 IO39 |
-       (Hot_LED) -| IO17                 IO38 |
-                  | IO18                 IO37 |
+       (Enc CLK) -| IO4                   IO1 |
+        (Enc DT) -| IO5                   IO2 |
+        (Enc SW) -| IO6                  IO42 |
+          (Relé) -| IO7                  IO41 |
+   (Termistor 1) -| IO15                 IO40 |
+   (Termistor 2) -| IO16                 IO39 |
+   (Termistor 3) -| IO17                 IO38 |
+       (Hot_LED) -| IO18                 IO37 |
                   | IO8                  IO36 |
                   | IO3                  IO35 |
                   | IO46                  IO0 |
                   | IO9                  IO45 |
-        (LCD CS) -| IO10                 IO48 |
-      (LCD MOSI) -| IO11                 IO47 |
-       (LCD SCK) -| IO12                 IO21 |
-       (LCD RST) -| IO13                 IO20 | - (5V (ze zdroje do ESP))
-   (Termistor 3) -| IO14                 IO19 | - (GND (ze zdroje do ESP))
+                  | IO10                 IO48 |
+        (LCD CS) -| IO11                 IO47 |
+      (LCD MOSI) -| IO12                 IO21 |
+       (LCD SCK) -| IO13                 IO20 |- (5V (ze zdroje do ESP))
+       (LCD RST) -| IO14                 IO19 |- (GND (ze zdroje do ESP))
      (LCD_VCC +) -| 5V                    GND |
                   | GND                   GND |
                   +-----------+   +-----------+
