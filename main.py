@@ -31,9 +31,9 @@ led = Pin(1, Pin.OUT)
 
 encoder = Encoder(clk_pin=4, dt_pin=5, sw_pin=6, debounce=200)
 
-sensor1 = Thermistor(pin_id=15, r_ref=989.0, offset=24, gain=1.01)
-sensor2 = Thermistor(pin_id=16, r_ref=982.0, offset=25, gain=1.0)
-sensor3 = Thermistor(pin_id=17, r_ref=986.0, offset=27, gain=1.0)
+sensor1 = Thermistor(pin_id=15, r_ref=984.0, offset=26, gain=1.01)
+sensor2 = Thermistor(pin_id=16, r_ref=984.0, offset=26, gain=1.0)
+sensor3 = Thermistor(pin_id=17, r_ref=984.0, offset=26, gain=1.0)
 
 display = Lcd()
 
