@@ -1,8 +1,8 @@
 # Vstřikovací lis.
-
+Toto je repozitář s programem pro stroj Polythermin. 
 
 # Zapojení
-Původní mega tabulka byla asi moc velká, tak tady to máš rozdělený na tři menší, ale všechny ve stejném stylu, ať to aspoň nějak vypadá.
+Toto je dokumentace zapojení.
 
 ## ENKODÉR
 | Komponenta / Pin | ESP32-S3 Pin | GPIO | Jaký to má smysl? (Popis) |
@@ -73,12 +73,12 @@ Původní mega tabulka byla asi moc velká, tak tady to máš rozdělený na tř
 
 # Instalace programu při sestavení stroje
 1. Připojíme naše ESP32 k PC pomocí USB-C kabelu (Kabel musí být schopen přenášet data.).
-2. Stáhneme si oficiální kód pro stroj na https://example.com/
+2. Stáhneme si oficiální kód pro stroj na https://github.com/SkolaVDF-Dev-Students/PolytherminProgram/releases
 3. Pokud nemáme na našem PC python, nainstalujeme ho.
 4. Nainstalujeme mpremote pomocí pip: `pip install mpremote`
 5. Poté co máme vše nainstalováno, spustíme tento příkaz a připojíme **náš aktualní adresář** k ESP32: `python -m mpremote mount .`
 6. **Otestujeme zda vše funguje.**
-7. Nahrajeme kompletní zdrojový kód pomocí: `mpremote connect auto fs cp -r . :`
+7. Nahrajeme kompletní zdrojový kód pomocí: `mpremote connect auto fs cp -r . :` **Nenahrávejte celý tento kód. Nahraje se i historie git. Stáhněte relese viz. bod 2.**
 
 
 # Testování a další vývoj kódu
