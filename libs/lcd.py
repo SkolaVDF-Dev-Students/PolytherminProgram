@@ -109,6 +109,9 @@ class Lcd:
             self.draw_text(str(int((t1/goal_temp)*100)), 107, 53)
             self.draw_text("%", 120, 53)
         
+        elif status == "ready":
+           self.draw_text("READY", 5, 53)
+
         elif status == "cooling":
             self.draw_text("COOLING", 5, 53)
 

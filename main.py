@@ -29,11 +29,11 @@ l_ch = 0
 # PERIFERIE
 led = Pin(1, Pin.OUT)
 
-encoder = Encoder(clk_pin=4, dt_pin=5, sw_pin=6, debounce=200)
+encoder = Encoder(clk_pin=4, dt_pin=5, sw_pin=6, debounce=20)
 
-sensor1 = Thermistor(pin_id=15, r_ref=984.0, v_ref=3.32)
-sensor2 = Thermistor(pin_id=16, r_ref=984.0, v_ref=3.32)
-sensor3 = Thermistor(pin_id=17, r_ref=984.0, v_ref=3.32)
+sensor1 = Thermistor(pin_id=15, r_ref=984.0, v_ref=3.32, offset=35)
+sensor2 = Thermistor(pin_id=16, r_ref=984.0, v_ref=3.32, offset=35)
+sensor3 = Thermistor(pin_id=17, r_ref=984.0, v_ref=3.32, offset=35)
 
 display = Lcd()
 
@@ -215,7 +215,7 @@ while True:
 
 
     # update screenu kazde 4s nebo po interakci
-    if change or (t_ch == 400): 
+    if change or (t_ch == 100): 
         display.clear()
 
         main.change_temp(t1, t2, t3)
@@ -233,12 +233,16 @@ while True:
                 display.draw_menu_arrows(False)
         
         if heating:
-            display.draw_info_bar(t1, goal_temp, "heating") 
+            if t1 >= (goal_temp - 10): 
+                display.draw_info_bar(t1, goal_temp, "ready") 
+
+            else:
+                display.draw_info_bar(t1, goal_temp, "heating") 
 
         else:
             if t1 < 30:
                 display.draw_info_bar(0, t1, "standby")
-            
+
             else: 
                 display.draw_info_bar(0, t1, "cooling")
 
