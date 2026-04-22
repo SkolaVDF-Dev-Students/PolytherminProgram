@@ -23,3 +23,6 @@ class Thermistor:
         temp = temp + self.offset
 
         return round(temp, 2)
+    
+    def set_offset(self, offset):
+        self.offset = offset

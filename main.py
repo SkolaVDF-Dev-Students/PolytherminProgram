@@ -13,6 +13,9 @@ t1 = 0
 t2 = 0
 t3 = 0
 
+
+offset = 35
+
 # cilova teplota
 goal_temp = 0
 
@@ -31,9 +34,9 @@ led = Pin(1, Pin.OUT)
 
 encoder = Encoder(clk_pin=4, dt_pin=5, sw_pin=6, debounce=20)
 
-sensor1 = Thermistor(pin_id=15, r_ref=984.0, v_ref=3.32, offset=35)
-sensor2 = Thermistor(pin_id=16, r_ref=984.0, v_ref=3.32, offset=35)
-sensor3 = Thermistor(pin_id=17, r_ref=984.0, v_ref=3.32, offset=35)
+sensor1 = Thermistor(pin_id=15, r_ref=984, v_ref=3.32, offset=offset)
+sensor2 = Thermistor(pin_id=16, r_ref=984, v_ref=3.32, offset=offset)
+sensor3 = Thermistor(pin_id=17, r_ref=984, v_ref=3.32, offset=offset)
 
 display = Lcd()
 
@@ -50,11 +53,11 @@ class Actions:
         global goal_temp, heating 
         """Akce pro menu vytápění"""
         if index == 1:
-            goal_temp = 300
+            goal_temp = 250
             heating = True
 
         elif index == 2:
-            goal_temp = 250
+            goal_temp = 200
             heating = True
 
     @staticmethod
@@ -102,7 +105,41 @@ class Actions:
                 display.draw_heat_settings(goal_temp)
                 display.show() 
 
-                utime.sleep_ms(10)   
+                utime.sleep_ms(10)
+
+
+    @staticmethod
+    def settings(index):
+        """Akce nastavení"""
+        global offset
+        if index == 1:
+            while True:
+                encoder_rotation = encoder.on_rotate()
+                encoder_click = encoder.on_click()
+
+                if encoder_rotation == -1:
+                    offset += 1
+
+                elif encoder_rotation == 1:
+                    offset -= 1
+
+                if encoder_click == 1:
+                    sensor1.set_offset(offset)
+                    sensor2.set_offset(offset)
+                    sensor3.set_offset(offset)
+                    break
+                
+                display.clear()
+                display.draw_text(str(offset), 55, 25)
+                display.show()   
+
+                utime.sleep_ms(10)  
+
+        elif index == 2:
+            display.clear()
+            display.draw_text("Version: v0.2", 25, 25)
+            display.show() 
+            utime.sleep(2)
 
                 
     @staticmethod
@@ -140,10 +177,16 @@ class Menu:
 main = Menu("Main", [f"T1: {int(t1)} C", f"T2: {int(t2)} C", f"T3: {int(t3)} C"], scrollable=False)
 
 # podmenu
-sub = Menu("Sub", ["BACK", "HEAT UP", "COOL DOWN"])
-heat = Menu("Heat", ["BACK", "PRESET", "MANUAL"])
+sub = Menu("Sub", ["BACK", "TEMP", "SETTINGS"])
+
+temp = Menu("Heat", ["BACK", "PRESET", "MANUAL"])
+
+settings = Menu("Heat", ["BACK", "THERMISTOR", "ABOUT"], action=Actions.settings)
+
 preset = Menu("Heat", ["BACK", "PET", "PP"], action=Actions.preset_heat)
+
 manual = Menu("Heat", ["BACK", "ARANGE 10 C", "ARANGE 1 C"], action=Actions.manual_heat)
+
 cool = Menu("Cool", ["BACK", "START COOLING"], action=Actions.cool)
 
 # nastaveni deti EFN
@@ -151,12 +194,11 @@ main.add_child(0, sub)
 main.add_child(1, sub)
 main.add_child(2, sub)
 
-sub.add_child(1, heat)
-sub.add_child(2, cool)
+sub.add_child(1, temp)
+sub.add_child(2, settings)
 
-heat.add_child(1, preset)
-heat.add_child(2, manual)
-
+temp.add_child(1, preset)
+temp.add_child(2, manual)
 
 current = main
 
