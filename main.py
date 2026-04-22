@@ -214,7 +214,7 @@ while True:
         change = True
 
 
-    # update screenu kazde 4s nebo po interakci
+    # update screenu kazde 1s nebo po interakci
     if change or (t_ch == 100): 
         display.clear()
 
@@ -262,7 +262,7 @@ while True:
         else:
             rele.relay_off()
 
-        if t1 >= goal_temp:
+        if t1 >= (goal_temp - 10):
             led.on()
 
 
