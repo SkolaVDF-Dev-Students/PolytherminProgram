@@ -7,26 +7,29 @@ from libs.rele import Rele
 from libs.thermistor import Thermistor
 from machine import Pin, ADC
 
-# PROMENE
+# PROMENNE
 # teploty termistoru 
 t1 = 0
 t2 = 0
 t3 = 0
 
-
+# ofset teploty termistoru, mozna uprava v LCD
 offset = 35
 
 # cilova teplota
 goal_temp = 0
 
-# globalni promene na optimalizaci
+# LOOPY A PROGRAM
+# index menu
 index = 0
 
-# optimalizace nacitani
+# nacitani displaye
 change = True
-heating = False
 t_ch = 0
 l_ch = 0
+
+# nahrivani
+heating = False
 
 
 # PERIFERIE
@@ -46,66 +49,54 @@ rele = Rele(pin_id=2)
 rele.relay_off()
 
 
-# akce v menu 
 class Actions:
+    @staticmethod
+    def arrange(title, value, jump):
+        while True:
+            encoder_rotation = encoder.on_rotate()
+            encoder_click = encoder.on_click()
+
+            if encoder_rotation == -1:
+                value += jump
+
+            elif encoder_rotation == 1:
+                if value > 0:
+                    value -= jump
+
+            if encoder_click == 1:
+                return value
+                
+            display.clear()
+            display.draw_settings(title, value)
+            display.show()
+
+            utime.sleep_ms(10)
+
     @staticmethod
     def preset_heat(index):
         global goal_temp, heating 
         """Akce pro menu vytápění"""
         if index == 1:
-            goal_temp = 250
+            goal_temp = 200
             heating = True
 
         elif index == 2:
-            goal_temp = 200
+            goal_temp = 250
             heating = True
+
 
     @staticmethod
     def manual_heat(index):
         """Akce pro menu vytápění"""
         global goal_temp, heating
         if index == 1:
-            while True:
-                encoder_rotation = encoder.on_rotate()
-                encoder_click = encoder.on_click()
-
-                if encoder_rotation == -1:
-                    goal_temp += 10
-
-                elif encoder_rotation == 1:
-                    if goal_temp > 0:
-                        goal_temp -= 10
-
-                if encoder_click == 1:
-                    heating = True
-                    break
-                
-                display.clear()
-                display.draw_heat_settings(goal_temp)
-                display.show()   
-
-                utime.sleep_ms(10)  
+            jump = 10
 
         elif index == 2:
-            while True:
-                encoder_rotation = encoder.on_rotate()
-                encoder_click = encoder.on_click()
-                if encoder_rotation == -1:
-                    goal_temp += 1
+            jump = 1
 
-                elif encoder_rotation == 1:
-                    if goal_temp > 0:
-                        goal_temp -= 1
-                
-                if encoder_click == 1:
-                    heating = True
-                    break
-
-                display.clear()
-                display.draw_heat_settings(goal_temp)
-                display.show() 
-
-                utime.sleep_ms(10)
+        goal_temp = Actions.arrange("GOAL TEMP", goal_temp, jump)
+        heating = True
 
 
     @staticmethod
@@ -113,33 +104,22 @@ class Actions:
         """Akce nastavení"""
         global offset
         if index == 1:
-            while True:
-                encoder_rotation = encoder.on_rotate()
-                encoder_click = encoder.on_click()
-
-                if encoder_rotation == -1:
-                    offset += 1
-
-                elif encoder_rotation == 1:
-                    offset -= 1
-
-                if encoder_click == 1:
-                    sensor1.set_offset(offset)
-                    sensor2.set_offset(offset)
-                    sensor3.set_offset(offset)
-                    break
-                
-                display.clear()
-                display.draw_text(str(offset), 55, 25)
-                display.show()   
-
-                utime.sleep_ms(10)  
+            offset = Actions.arrange("Offset", offset, 1)
+            sensor1.set_offset(offset)
+            sensor2.set_offset(offset)
+            sensor3.set_offset(offset)
 
         elif index == 2:
             display.clear()
-            display.draw_text("Version: v0.2", 25, 25)
+            display.draw_about()
             display.show() 
-            utime.sleep(2)
+
+            while True:
+                if encoder.on_click() == 1:
+                    break
+                
+                utime.sleep_ms(10)
+
 
                 
     @staticmethod
@@ -178,15 +158,10 @@ main = Menu("Main", [f"T1: {int(t1)} C", f"T2: {int(t2)} C", f"T3: {int(t3)} C"]
 
 # podmenu
 sub = Menu("Sub", ["BACK", "TEMP", "SETTINGS"])
-
 temp = Menu("Heat", ["BACK", "PRESET", "MANUAL"])
-
 settings = Menu("Heat", ["BACK", "THERMISTOR", "ABOUT"], action=Actions.settings)
-
-preset = Menu("Heat", ["BACK", "PET", "PP"], action=Actions.preset_heat)
-
+preset = Menu("Heat", ["BACK", "200", "250"], action=Actions.preset_heat)
 manual = Menu("Heat", ["BACK", "ARANGE 10 C", "ARANGE 1 C"], action=Actions.manual_heat)
-
 cool = Menu("Cool", ["BACK", "START COOLING"], action=Actions.cool)
 
 # nastaveni deti EFN
@@ -206,7 +181,7 @@ current = main
 network.WLAN(network.STA_IF).active(False)
 network.WLAN(network.AP_IF).active(False)
 
-# boot screen - tu udelat async - naser si :)
+# boot screen
 display.clear()
 display.draw_boot_screen(0, 0)
 display.show()
@@ -282,7 +257,7 @@ while True:
                 display.draw_info_bar(t1, goal_temp, "heating") 
 
         else:
-            if t1 < 30:
+            if t1 < 70:
                 display.draw_info_bar(0, t1, "standby")
 
             else: 
@@ -296,7 +271,7 @@ while True:
         t_ch = 0
 
 
-    # nahrivani toto potreba optimalizovat
+    # nahrivani
     if heating:
         if goal_temp > t1:
             rele.relay_on()
@@ -308,6 +283,7 @@ while True:
             led.on()
 
 
+    # blikani led
     if t1 > 70:
         if l_ch == 100:
             led.on()

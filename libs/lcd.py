@@ -182,10 +182,6 @@ class Lcd:
             self.plot(0, y)
             self.plot(127, y)
 
-    def draw_heat_settings(self, goal_temp):
-        """Vykresleni heating nastaveni"""
-        self.draw_text(f"GOAL TEMP: {goal_temp}", 30, 25)
-
     def draw_boot_screen(self, x, y):
         """Vykresli boot screen s logami"""
 
@@ -204,3 +200,12 @@ class Lcd:
                 if byte_index < len(loga):
                     if loga[byte_index] & (1 << bit_position):
                         self.plot(x + col, y + row)
+
+    def draw_about(self):
+        self.draw_text("Polythermin", 5, 5)
+        self.draw_text("Version v0.2", 5, 21)
+        self.draw_text("Made by SkolaVDF", 5, 37)
+        self.draw_text("Licensed under MIT", 5, 53)
+
+    def draw_settings(self, settings, var)
+        self.draw_text(f"{settings}: {var}", 5, 25)
