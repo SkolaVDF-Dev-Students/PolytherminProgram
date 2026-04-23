@@ -1,9 +1,33 @@
-# Vstřikovací lis.
-Toto je repozitář s programem pro stroj Polythermin. 
+# **Polythermin**
+V tomto dokumentu je detailně popsáno elektro zapojení stroje a instalace programu. Nedoporučujeme cokoliv upravovat bez patřičných znalostí. 
+
+
+# Instalace programu při sestavení stroje
+- Ujistíme se že stroj je odpojený od elektrocké sítě a klíč je v poloze vypnuto.
+ 
+1. Připojíme naše ESP32 k PC pomocí USB-C kabelu (Kabel musí být schopen přenášet data.).
+2. Stáhneme si oficiální kód pro stroj na https://github.com/SkolaVDF-Dev-Students/PolytherminProgram/releases/
+3. Pokud nemáme na našem PC python, nainstalujeme ho.
+4. Nainstalujeme mpremote pomocí pip: `pip install mpremote`
+5. Poté co máme vše nainstalováno, spustíme tento příkaz a připojíme **náš aktualní adresář** k ESP32: `python -m mpremote mount .`
+6. **Otestujeme zda vše funguje.**
+7. Nahrajeme kompletní zdrojový kód pomocí: `mpremote connect auto fs cp -r . :`
+
+
+# Testování a další vývoj kódu
+- Kód si můžete přispůsobit podle licence
+- Kód lze vyvíjet velice efektivně v jakémkoliv IDE
+
+
+## Užitečné příkazy
+- Připojení našeho aktuální adresáře do ESP32 a vstup do REPLu -  `python -m mpremote mount .`
+- Spuštění scriptu v REPLu  - `import main`
+- Soft-reset REPLu (např. změna kódu, kód se neaktualizuje po uložení) - CTRL + D
+- Exit kódu - CTRL + C
+- Exit REPLu - CTRL + Q 
+
 
 # Zapojení
-Toto je dokumentace zapojení.
-
 ## ENKODÉR
 | Komponenta / Pin | ESP32-S3 Pin | GPIO | Jaký to má smysl? (Popis) |
 | :--- | :--- | :--- | :--- |
@@ -33,9 +57,9 @@ Toto je dokumentace zapojení.
 ## Ostatní
 | Komponenta / Pin | ESP32-S3 Pin | GPIO | Jaký to má smysl? (Popis) |
 | :--- | :--- | :--- | :--- |
-| Termistor 1 (T1) | IO15 | GPIO15 | Snímání teploty (r_ref=989.0, off: 24) |
-| Termistor 2 (T2) | IO16 | GPIO16 | Snímání teploty (r_ref=982.0, off: 25) |
-| Termistor 3 (T3) | IO17 | GPIO17 | Snímání teploty (r_ref=986.0, off: 27) |
+| Termistor 1 (T1) | IO15 | GPIO15 | Snímání teploty |
+| Termistor 2 (T2) | IO16 | GPIO16 | Snímání teploty |
+| Termistor 3 (T3) | IO17 | GPIO17 | Snímání teploty |
 | LED indikace | IO1 | GPIO1 | Varovná kontrolka (> 70°C, ať si neopálíš pracky) |
 | Relé topení | IO2 | GPIO2 | Spínání vyhřívání lisu (jestli to blafne, tvůj boj) |
 
@@ -70,25 +94,3 @@ Toto je dokumentace zapojení.
                               |USB|
                               +---+
 ```
-
-# Instalace programu při sestavení stroje
-1. Připojíme naše ESP32 k PC pomocí USB-C kabelu (Kabel musí být schopen přenášet data.).
-2. Stáhneme si oficiální kód pro stroj na https://github.com/SkolaVDF-Dev-Students/PolytherminProgram/releases
-3. Pokud nemáme na našem PC python, nainstalujeme ho.
-4. Nainstalujeme mpremote pomocí pip: `pip install mpremote`
-5. Poté co máme vše nainstalováno, spustíme tento příkaz a připojíme **náš aktualní adresář** k ESP32: `python -m mpremote mount .`
-6. **Otestujeme zda vše funguje.**
-7. Nahrajeme kompletní zdrojový kód pomocí: `mpremote connect auto fs cp -r . :` **Nenahrávejte celý tento kód. Nahraje se i historie git. Stáhněte relese viz. bod 2.**
-
-
-# Testování a další vývoj kódu
-- Kód si můžete přispůsobit podle licence
-- Kód lze vyvíjet velice efektivně v jakémkoliv IDE
-
-
-## Užitečné příkazy
-- Připojení našeho aktuální adresáře do ESP32 a vstup do REPLu -  `python -m mpremote mount .`
-- Spuštění scriptu v REPLu  - `import main`
-- Soft-reset REPLu (např. změna kódu, kód se neaktualizuje po uložení) - CTRL + D
-- Exit kódu - CTRL + C
-- Exit REPLu - CTRL + Q 
