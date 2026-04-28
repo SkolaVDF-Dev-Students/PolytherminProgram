@@ -73,19 +73,6 @@ class Actions:
             utime.sleep_ms(10)
 
     @staticmethod
-    def preset_heat(index):
-        global goal_temp, heating 
-        """Akce pro menu vytápění"""
-        if index == 1:
-            goal_temp = 200
-            heating = True
-
-        elif index == 2:
-            goal_temp = 250
-            heating = True
-
-
-    @staticmethod
     def manual_heat(index):
         """Akce pro menu vytápění"""
         global goal_temp, heating
@@ -126,7 +113,7 @@ class Actions:
     def cool(index):
         """Start cooling"""
         global heating
-        if index == 1:
+        if index == 2:
             heating = False
             rele.relay_off()
 
@@ -158,11 +145,9 @@ main = Menu("Main", [f"T1: {int(t1)} C", f"T2: {int(t2)} C", f"T3: {int(t3)} C"]
 
 # podmenu
 sub = Menu("Sub", ["BACK", "TEMP", "SETTINGS"])
-temp = Menu("Heat", ["BACK", "PRESET", "MANUAL"])
+temp = Menu("Heat", ["BACK", "HEAT", "COOL"], action=Actions.cool)
 settings = Menu("Heat", ["BACK", "THERMISTOR", "ABOUT"], action=Actions.settings)
-preset = Menu("Heat", ["BACK", "200", "250"], action=Actions.preset_heat)
 manual = Menu("Heat", ["BACK", "ARANGE 10 C", "ARANGE 1 C"], action=Actions.manual_heat)
-cool = Menu("Cool", ["BACK", "START COOLING"], action=Actions.cool)
 
 # nastaveni deti EFN
 main.add_child(0, sub) 
@@ -172,8 +157,7 @@ main.add_child(2, sub)
 sub.add_child(1, temp)
 sub.add_child(2, settings)
 
-temp.add_child(1, preset)
-temp.add_child(2, manual)
+temp.add_child(1, manual)
 
 current = main
 

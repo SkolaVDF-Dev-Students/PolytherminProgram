@@ -4,7 +4,7 @@ setlocal
 REM ============================
 REM  CONFIG
 REM ============================
-set DEVELOPER_MODE=false
+set DEVELOPER_MODE=true
 set DIST_DIR=dist
 
 echo --------------------------------------

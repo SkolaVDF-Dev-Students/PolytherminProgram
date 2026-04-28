@@ -215,5 +215,5 @@ class Lcd:
         self.draw_text("Made by SkolaVDF", 5, 37)
         self.draw_text("Licensed under MIT", 5, 53)
 
-    def draw_settings(self, settings, var)
+    def draw_settings(self, settings, var):
         self.draw_text(f"{settings}: {var}", 5, 25)
