@@ -87,6 +87,18 @@ class Actions:
 
 
     @staticmethod
+    def preset_heat(index):
+        """Akce pro menu vytápění"""
+        global goal_temp, heating
+        if index == 1:
+            goal_temp = 260
+
+        elif index == 2:
+            goal_temp = 180
+
+        heating = True
+
+    @staticmethod
     def settings(index):
         """Akce nastavení"""
         global offset
@@ -113,7 +125,7 @@ class Actions:
     def cool(index):
         """Start cooling"""
         global heating
-        if index == 2:
+        if index == 1:
             heating = False
             rele.relay_off()
 
@@ -145,9 +157,12 @@ main = Menu("Main", [f"T1: {int(t1)} C", f"T2: {int(t2)} C", f"T3: {int(t3)} C"]
 
 # podmenu
 sub = Menu("Sub", ["BACK", "TEMP", "SETTINGS"])
-temp = Menu("Heat", ["BACK", "HEAT", "COOL"], action=Actions.cool)
-settings = Menu("Heat", ["BACK", "THERMISTOR", "ABOUT"], action=Actions.settings)
-manual = Menu("Heat", ["BACK", "ARANGE 10 C", "ARANGE 1 C"], action=Actions.manual_heat)
+temp = Menu("Temp", ["BACK", "HEAT", "COOL"])
+heat = Menu("Heat", ["BACK", "MANUAL", "PRESET"])
+cool = Menu("Cool", ["BACK", "START COOLING"], action=Actions.cool)
+settings = Menu("Settings", ["BACK", "THERMISTOR", "ABOUT"], action=Actions.settings)
+manual = Menu("Manual", ["BACK", "ARANGE 10 C", "ARANGE 1 C"], action=Actions.manual_heat)
+preset = Menu("Preset", ["BACK", "PET", "PLA"], action=Actions.preset_heat)
 
 # nastaveni deti EFN
 main.add_child(0, sub) 
@@ -157,7 +172,11 @@ main.add_child(2, sub)
 sub.add_child(1, temp)
 sub.add_child(2, settings)
 
-temp.add_child(1, manual)
+temp.add_child(1, heat)
+temp.add_child(2, cool)
+
+heat.add_child(1, manual)
+heat.add_child(2, preset)
 
 current = main
 
@@ -234,7 +253,7 @@ while True:
                 display.draw_menu_arrows(False)
         
         if heating:
-            if t1 >= (goal_temp - 10): 
+            if t1 >= (goal_temp - 20): 
                 display.draw_info_bar(t1, goal_temp, "ready") 
 
             else:
@@ -248,7 +267,7 @@ while True:
                 display.draw_info_bar(0, t1, "cooling")
 
         if not current.is_scrollable:
-            display.draw_heat_warning(90, 10, t1) 
+            display.draw_heat_warning(90, 10, t1, goal_temp) 
         
         display.show()
         change = False
@@ -263,7 +282,7 @@ while True:
         else:
             rele.relay_off()
 
-        if t1 >= (goal_temp - 10):
+        if t1 >= (goal_temp - 20):
             led.on()
 
 
