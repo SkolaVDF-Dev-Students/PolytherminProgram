@@ -1,9 +1,10 @@
 #!/bin/bash
+set -e
 
 # ============================
 #  CONFIG
 # ============================
-DEVELOPER_MODE=false   # true = dev build
+DEVELOPER_MODE=true   # true = dev build
 DIST_DIR="dist"
 
 echo "--------------------------------------"
@@ -11,30 +12,11 @@ echo "   Welcome to the build script (Linux)"
 echo "--------------------------------------"
 
 # ============================
-#  CHECK / INSTALL MPREMOTE
-# ============================
-if [ "$DEVELOPER_MODE" = false ]; then
-    echo "[INFO] Kontroluji mpremote..."
-
-    if ! command -v mpremote >/dev/null 2>&1; then
-        echo "[INFO] mpremote nenalezen – instaluji..."
-        pip install mpremote || {
-            echo "[ERROR] Instalace mpremote selhala."
-            exit 1
-        }
-    else
-        echo "[INFO] mpremote OK"
-    fi
-else
-    echo "[DEV MODE] Přeskakuji kontrolu mpremote."
-fi
-
-# ============================
 #  PREPARE DIST
 # ============================
 echo "[INFO] Čistím a vytvářím složku $DIST_DIR..."
 rm -rf "$DIST_DIR"
-mkdir "$DIST_DIR"
+mkdir -p "$DIST_DIR"
 
 echo "[INFO] Kopíruji main.py a libs..."
 cp ./main.py "$DIST_DIR"/
@@ -64,9 +46,7 @@ fi
 # ============================
 #  RUN MPREMOTE
 # ============================
-cd "$DIST_DIR" || exit 1
-
 echo "[INFO] Upload přes mpremote..."
-python -m mpremote connect auto fs cp -r . :
+mpremote connect auto fs cp -r "$DIST_DIR"/. :
 
 echo "[INFO] Hotovo!"
