@@ -70,7 +70,7 @@ REM ============================
 REM  RUN MPREMOTE
 REM ============================
 echo [INFO] Upload pres mpremote...
-mpremote connect auto fs cp -r "%DIST_DIR%\." :
+python3 -m mpremote connect auto fs cp -r "%DIST_DIR%\." :
 if errorlevel 1 (
     echo [ERROR] Upload pres mpremote selhal.
     exit /b 1
