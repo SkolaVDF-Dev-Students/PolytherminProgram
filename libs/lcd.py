@@ -204,13 +204,10 @@ class Lcd:
                         self.plot(x + col, y + row)
 
     def draw_about(self):
-        try:
-            with open("../version.txt", "r") as f:
-                version = f.read().strip()
-                if not version:
-                    version = "unofficial"
-        except:
-            version = "unofficial"
+        with open("/version.txt", "r") as f:
+            version = f.read().strip()
+            if not version:
+                version = "unofficial"
 
         self.draw_text("Polythermin", 5, 5)
         self.draw_text(f"Version {version}", 5, 21)
