@@ -8,10 +8,11 @@ V tomto dokumentu je detailně popsáno elektro zapojení stroje a instalace pro
 1. Připojíme naše ESP32 k PC pomocí USB-C kabelu (Kabel musí být schopen přenášet data.).
 2. Stáhneme si oficiální kód pro stroj na https://github.com/SkolaVDF-Dev-Students/PolytherminProgram/releases/
 3. Pokud nemáme na našem PC python, nainstalujeme ho.
-4. Nainstalujeme mpremote pomocí pip: `pip install mpremote`
-5. Poté co máme vše nainstalováno, spustíme tento příkaz a připojíme **náš aktualní adresář** k ESP32: `python -m mpremote mount .`
-6. **Otestujeme zda vše funguje.**
-7. Nahrajeme kompletní zdrojový kód pomocí: `mpremote connect auto fs cp -r . :`
+4. Nainstalujeme závislost pomocí pip: `pip install mpremote esptool`
+5. Na desku nainstalujeme firmware, který si stáhneme na https://micropython.org/download/ESP32_GENERIC_S3/. Podrobný návod na jejich webu. Doporučujeme použít příkaz `python -m esptool --port {port} --baud 460800 write_flash 0 {firmware.bin}`
+6. Poté co máme vše nainstalováno, spustíme tento příkaz a připojíme **náš aktualní adresář** k ESP32: `python -m mpremote mount .`
+7. **Otestujeme zda vše funguje.**
+8. Nahrajeme kompletní zdrojový kód pomocí: `mpremote connect auto fs cp -r . :`
 
 
 # Testování a další vývoj kódu
@@ -20,6 +21,7 @@ V tomto dokumentu je detailně popsáno elektro zapojení stroje a instalace pro
 
 
 ## Užitečné příkazy
+- Smazaní aktuálních souborů a kódu - `python -m mpremote rm -r :/`
 - Připojení našeho aktuální adresáře do ESP32 a vstup do REPLu -  `python -m mpremote mount .`
 - Spuštění scriptu v REPLu  - `import main`
 - Soft-reset REPLu (např. změna kódu, kód se neaktualizuje po uložení) - CTRL + D
