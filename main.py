@@ -22,6 +22,7 @@ goal_temp = 0
 # LOOPY A PROGRAM
 # index menu
 index = 0
+menu_start = 0
 
 # nacitani displaye
 change = True
@@ -110,8 +111,22 @@ class Actions:
 
         elif index == 2:
             display.clear()
+            display.draw_settings("DEMO", "ACTIVE")
+            display.show()
+
+            while True:
+                if encoder.on_click() == 1:
+                    break
+
+                utime.sleep_ms(10)
+
+    @staticmethod
+    def about(index):
+        """Zobrazi informace o programu"""
+        if index == 4:
+            display.clear()
             display.draw_about()
-            display.show() 
+            display.show()
 
             while True:
                 if encoder.on_click() == 1:
@@ -119,8 +134,6 @@ class Actions:
                 
                 utime.sleep_ms(10)
 
-
-                
     @staticmethod
     def cool(index):
         """Start cooling"""
@@ -156,27 +169,23 @@ class Menu:
 main = Menu("Main", [f"T1: {int(t1)} C", f"T2: {int(t2)} C", f"T3: {int(t3)} C"], scrollable=False)
 
 # podmenu
-sub = Menu("Sub", ["BACK", "TEMP", "SETTINGS"])
-temp = Menu("Temp", ["BACK", "HEAT", "COOL"])
-heat = Menu("Heat", ["BACK", "MANUAL", "PRESET"])
+sub = Menu("Sub", ["BACK", "HEAT UP", "COOL DOWN", "SETTINGS", "ABOUT"],
+           action=Actions.about)
+heat = Menu("Heat", ["BACK", "PRESET", "MANUAL"])
 cool = Menu("Cool", ["BACK", "START COOLING"], action=Actions.cool)
-settings = Menu("Settings", ["BACK", "THERMISTOR", "ABOUT"], action=Actions.settings)
-manual = Menu("Manual", ["BACK", "ARANGE 10 C", "ARANGE 1 C"], action=Actions.manual_heat)
+settings = Menu("Settings", ["BACK", "THERMISTOR", "DEMO"], action=Actions.settings)
+manual = Menu("Manual", ["BACK", "ARRANGE 10 C", "ARRANGE 1 C"], action=Actions.manual_heat)
 preset = Menu("Preset", ["BACK", "PET", "PLA"], action=Actions.preset_heat)
 
 # nastaveni deti EFN
 main.add_child(0, sub) 
-main.add_child(1, sub)
-main.add_child(2, sub)
 
-sub.add_child(1, temp)
-sub.add_child(2, settings)
+sub.add_child(1, heat)
+sub.add_child(2, cool)
+sub.add_child(3, settings)
 
-temp.add_child(1, heat)
-temp.add_child(2, cool)
-
-heat.add_child(1, manual)
-heat.add_child(2, preset)
+heat.add_child(1, preset)
+heat.add_child(2, manual)
 
 current = main
 
@@ -217,6 +226,7 @@ while True:
         if not current.is_scrollable:
             current = sub
             index = 0
+            menu_start = 0
         else:
             selected_text = current.menu[index]
             
@@ -224,9 +234,11 @@ while True:
                 if current.parent:
                     current = current.parent
                     index = 0
+                    menu_start = 0
             elif index in current.children:
                 current = current.children[index]
                 index = 0
+                menu_start = 0
             else:
                 change = True
                 current.execute_action(index)
@@ -239,18 +251,23 @@ while True:
         display.clear()
 
         main.change_temp(t1, t2, t3)
-        
-        m1 = current.menu[0] if len(current.menu) > 0 else ""
-        m2 = current.menu[1] if len(current.menu) > 1 else ""
-        m3 = current.menu[2] if len(current.menu) > 2 else ""
+
+        # Zobrazujeme vzdy jen tri polozky kolem vybrane polozky.
+        if current.is_scrollable and len(current.menu) > 3:
+            menu_start = max(0, min(index - 1, len(current.menu) - 3))
+        else:
+            menu_start = 0
+
+        visible_menu = current.menu[menu_start:menu_start + 3]
+        m1 = visible_menu[0] if len(visible_menu) > 0 else ""
+        m2 = visible_menu[1] if len(visible_menu) > 1 else ""
+        m3 = visible_menu[2] if len(visible_menu) > 2 else ""
         display.draw_menu(m1, m2, m3)
         
         if current.is_scrollable and index >= 0:
-            display.draw_scroll(index)
-            if m3 != "":
-                display.draw_menu_arrows(True)
-            else:
-                display.draw_menu_arrows(False)
+            display.draw_scroll(index - menu_start)
+            display.draw_menu_arrows(menu_start > 0,
+                                     menu_start + len(visible_menu) < len(current.menu))
         
         if heating:
             if t1 >= (goal_temp - 20): 

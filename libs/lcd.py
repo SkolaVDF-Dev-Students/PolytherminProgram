@@ -130,11 +130,12 @@ class Lcd:
         self.draw_text(m2, 5, 21)
         self.draw_text(m3, 5, 37)
 
-    def draw_menu_arrows(self, second):
-        """Vykresli menu arrows"""
-        self.draw_text("\x02", 120, 5)
-        self.draw_text("\x01", 120, 21)
-        if second:
+    def draw_menu_arrows(self, show_up, show_down):
+        """Vykresli sipky podle toho, jestli jde menu posunout"""
+        if show_up:
+            self.draw_text("\x02", 120, 5)
+
+        if show_down:
             self.draw_text("\x01", 120, 37)
 
     def draw_heat_warning(self, x, y, t1, goal_temp):
