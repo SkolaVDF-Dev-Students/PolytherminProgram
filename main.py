@@ -127,8 +127,9 @@ class Actions:
         global heating
         if index == 1:
             heating = False
+            """
             rele.relay_off()
-
+            """
 
 # menu nastaveni parent atd.
 class Menu:
@@ -252,6 +253,7 @@ while True:
             else:
                 display.draw_menu_arrows(False)
         
+        """        
         if heating:
             if t1 >= (goal_temp - 20): 
                 display.draw_info_bar(t1, goal_temp, "ready") 
@@ -265,6 +267,9 @@ while True:
 
             else: 
                 display.draw_info_bar(0, t1, "cooling")
+        """
+
+        display.draw_info_bar(0, t1, "demo mode")
 
         if not current.is_scrollable:
             display.draw_heat_warning(90, 10, t1, goal_temp) 
@@ -276,11 +281,15 @@ while True:
 
     # nahrivani
     if heating:
+        """
         if goal_temp > t1:
             rele.relay_on()
 
         else:
             rele.relay_off()
+        """
+        
+
 
         if t1 >= (goal_temp - 20):
             led.on()
