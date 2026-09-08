@@ -32,6 +32,7 @@ l_ch = 0
 # nahrivani
 heating = False
 
+demo = False
 
 # PERIFERIE
 led = Pin(1, Pin.OUT)
@@ -102,7 +103,7 @@ class Actions:
     @staticmethod
     def settings(index):
         """Akce nastavení"""
-        global offset
+        global offset, demo
         if index == 1:
             offset = Actions.arrange("Offset", offset, 1)
             sensor1.set_offset(offset)
@@ -110,15 +111,7 @@ class Actions:
             sensor3.set_offset(offset)
 
         elif index == 2:
-            display.clear()
-            display.draw_settings("DEMO", "ACTIVE")
-            display.show()
-
-            while True:
-                if encoder.on_click() == 1:
-                    break
-
-                utime.sleep_ms(10)
+            demo = not demo
 
     @staticmethod
     def about(index):
@@ -267,8 +260,12 @@ while True:
         if current.is_scrollable and index >= 0:
             display.draw_scroll(index - menu_start)
             display.draw_menu_arrows(visible_menu)
-        
-        if heating:
+
+
+        if demo:
+            display.draw_info_bar(0, t1, "DEMO") 
+
+        elif (heating == True) and (demo == False):
             if t1 >= (goal_temp - 20): 
                 display.draw_info_bar(t1, goal_temp, "ready") 
 
@@ -282,6 +279,7 @@ while True:
             else: 
                 display.draw_info_bar(0, t1, "cooling")
 
+
         if not current.is_scrollable:
             display.draw_heat_warning(90, 10, t1, goal_temp) 
         
@@ -291,7 +289,7 @@ while True:
 
 
     # nahrivani
-    if heating:
+    if (heating == True) and (demo == False):
         if goal_temp > t1:
             rele.relay_on()
 

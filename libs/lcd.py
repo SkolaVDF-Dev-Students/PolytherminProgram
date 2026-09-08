@@ -115,6 +115,9 @@ class Lcd:
         elif status == "cooling":
             self.draw_text("COOLING", 5, 53)
 
+        elif status == "DEMO":
+            self.draw_text("DEMO", 5, 53)
+
         else:
             self.draw_text("STAND BY", 5, 53)
 
