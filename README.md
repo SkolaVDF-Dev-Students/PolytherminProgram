@@ -26,7 +26,7 @@ V tomto dokumentu je detailně popsáno elektro zapojení stroje a instalace pro
 - Spuštění scriptu v REPLu  - `import main`
 - Soft-reset REPLu (např. změna kódu, kód se neaktualizuje po uložení) - CTRL + D
 - Exit kódu - CTRL + C
-- Exit REPLu - CTRL + Q 
+- Exit REPLu - CTRL + Q (VSC shortcut, blbý)
 
 
 # Zapojení
@@ -96,3 +96,12 @@ V tomto dokumentu je detailně popsáno elektro zapojení stroje a instalace pro
                               |USB|
                               +---+
 ```
+
+## Branches
+| Název | Otestováno | Stabilní | Pozn. |
+| :--- | :--- | :--- | :--- |
+| main | ✅ | ✅ ||
+| demo | ✅ | ✅ | Nutné lépe importovat do main. Momentálně je odpojená funkce na relé. |
+| feature/menu | ❌ | ❌ | Nutné otestovat a importovat jak do dema tak do main. |
+
+- Ostatní stale jsou zastaralé archivní branche.
