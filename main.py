@@ -266,8 +266,7 @@ while True:
         
         if current.is_scrollable and index >= 0:
             display.draw_scroll(index - menu_start)
-            display.draw_menu_arrows(menu_start > 0,
-                                     menu_start + len(visible_menu) < len(current.menu))
+            display.draw_menu_arrows(visible_menu)
         
         if heating:
             if t1 >= (goal_temp - 20): 
