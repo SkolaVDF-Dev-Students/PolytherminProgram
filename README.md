@@ -102,6 +102,5 @@ V tomto dokumentu je detailně popsáno elektro zapojení stroje a instalace pro
 | :--- | :--- | :--- | :--- |
 | main | ✅ | ✅ ||
 | demo | ✅ | ✅ | Nutné lépe importovat do main. Momentálně je odpojená funkce na relé. |
-| feature/menu | ❌ | ❌ | Nutné otestovat a importovat jak do dema tak do main. |
 
 - Ostatní stale jsou zastaralé archivní branche.
