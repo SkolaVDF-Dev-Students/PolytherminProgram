@@ -12,7 +12,7 @@ V tomto dokumentu je detailně popsáno elektro zapojení stroje a instalace pro
 5. Na desku nainstalujeme firmware, který si stáhneme na https://micropython.org/download/ESP32_GENERIC_S3/. Podrobný návod na jejich webu. Doporučujeme použít příkaz `python -m esptool --port {port} --baud 460800 write_flash 0 {firmware.bin}`
 6. Poté co máme vše nainstalováno, spustíme tento příkaz a připojíme **náš aktualní adresář** k ESP32: `python -m mpremote mount .`
 7. **Otestujeme zda vše funguje.**
-8. Nahrajeme kompletní zdrojový kód pomocí: `mpremote connect auto fs cp -r . :`
+8. Nahrajeme kompletní zdrojový kód pomocí: `python -m mpremote connect auto fs cp -r . :`
 
 
 # Testování a další vývoj kódu
