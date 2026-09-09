@@ -7,6 +7,8 @@ from libs.rele import Rele
 from libs.thermistor import Thermistor
 from machine import Pin, ADC
 
+print("[I] importovany moduly")
+
 # PROMENNE
 # teploty termistoru 
 t1 = 0
@@ -47,8 +49,11 @@ display = Lcd()
 
 rele = Rele(pin_id=2)
 
+print("[I] periferie inicializovany")
+
 # zajistime ze se vypne. obcas je zaple 
 rele.relay_off()
+print("[I] rele vypnuto")
 
 
 class Actions:
@@ -86,6 +91,7 @@ class Actions:
 
         goal_temp = Actions.arrange("GOAL TEMP", goal_temp, jump)
         heating = True
+        print(f"[I] cilova teplota nastavena na {goal_temp} C")
 
 
     @staticmethod
@@ -98,6 +104,7 @@ class Actions:
         elif index == 2:
             goal_temp = 180
 
+        print(f"[I] cilova teplota nastavena na {goal_temp} C")
         heating = True
 
     @staticmethod
@@ -109,9 +116,11 @@ class Actions:
             sensor1.set_offset(offset)
             sensor2.set_offset(offset)
             sensor3.set_offset(offset)
-
+            print(f"[I] offset termistoru nastaven na {offset} C") 
+        
         elif index == 2:
             demo = not demo
+            print(f"[I] demo mode nastaven na {demo}")
 
     @staticmethod
     def about(index):
@@ -134,6 +143,7 @@ class Actions:
         if index == 1:
             heating = False
             rele.relay_off()
+            print("[I] nahrivani vypnuto, start cooling")
 
 
 # menu nastaveni parent atd.
@@ -192,6 +202,7 @@ display.draw_boot_screen(0, 0)
 display.show()
 utime.sleep(3)
 
+print("[I] program uspesne spusten")
 
 while True:
     # cteni periferii
@@ -200,7 +211,6 @@ while True:
     t1 = sensor1.read()
     t2 = sensor2.read()
     t3 = sensor3.read()
-
     
     # zda jsme v main menu
     if current.is_scrollable:
