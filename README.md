@@ -101,6 +101,5 @@ V tomto dokumentu je detailně popsáno elektro zapojení stroje a instalace pro
 | Název | Otestováno | Stabilní | Pozn. |
 | :--- | :--- | :--- | :--- |
 | main | ✅ | ✅ ||
-| demo | ✅ | ✅ | Nutné lépe importovat do main. Momentálně je odpojená funkce na relé. |
 
 - Ostatní stale jsou zastaralé archivní branche.
